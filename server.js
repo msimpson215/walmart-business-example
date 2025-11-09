@@ -1,40 +1,35 @@
 import express from "express";
-import compression from "compression";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import helmet from "helmet";
 
 const app = express();
-app.use(compression());
-app.use(cors());
+const PORT = process.env.PORT || 3000;
 
-// ✅ Allow embedding + mic from host shells
+// Security headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // disable CSP for iframe testing
+  })
+);
+
+// Allow embedding in iframes from anywhere (for testing)
 app.use((req, res, next) => {
-  // IMPORTANT: don't set X-Frame-Options: DENY/SAMEORIGIN
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self' https:; frame-ancestors 'self' *; connect-src 'self' https: wss:; media-src 'self' https: blob:; img-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;"
-  );
+  res.setHeader("X-Frame-Options", "ALLOWALL");
   res.setHeader(
     "Permissions-Policy",
-    'microphone=(self "*"), camera=(), geolocation=()'
+    "microphone=(self), autoplay=(self)"
   );
   next();
 });
 
-// Health check for Render
-app.get("/healthz", (_, res) => res.status(200).send("ok"));
+// Health check
+app.get("/healthz", (req, res) => res.send("ok"));
 
-// Serve static files from /public
-app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
+// Serve static files
+app.use(express.static("public"));
 
-// Fallback to /public/index.html
+// Fallback to index.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile("index.html", { root: "public" });
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log("✅ VoxTalk running on :" + port));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
