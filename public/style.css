@@ -1,1 +1,10 @@
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: #e9ecef;
+  color: #111;
+  padding: 40px;
+}
+h1 {
+  color: #0071ce;
+}
 
