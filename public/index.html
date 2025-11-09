@@ -1,13 +1,35 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>VoxTalk — Walmart Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <h1>✅ VoxTalk — Walmart AI is running</h1>
-  <p>This is the front-end test page served from <code>/public/index.html</code>.</p>
+const startBtn = document.getElementById('start-voice');
+const stopBtn = document.getElementById('stop-voice');
+const logEl = document.getElementById('vt-log');
+
+
+function openOverlay() {
+overlay.setAttribute('aria-hidden', 'false');
+document.body.classList.add('no-scroll');
+}
+function closeOverlay() {
+overlay.setAttribute('aria-hidden', 'true');
+document.body.classList.remove('no-scroll');
+}
+
+
+openBtn.addEventListener('click', openOverlay);
+closeBtn.addEventListener('click', closeOverlay);
+overlay.querySelector('.scrim').addEventListener('click', closeOverlay);
+
+
+// Placeholder voice controls (no realtime backend wired yet)
+startBtn.addEventListener('click', () => {
+startBtn.disabled = true;
+stopBtn.disabled = false;
+logEl.innerHTML = '<div>🎙️ Voice session started (stub)</div>';
+});
+stopBtn.addEventListener('click', () => {
+startBtn.disabled = false;
+stopBtn.disabled = true;
+logEl.innerHTML += '<div>■ Stopped</div>';
+});
+</script>
 </body>
 </html>
