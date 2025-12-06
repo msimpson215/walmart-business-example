@@ -20,7 +20,7 @@ body {
   flex-direction: column;
 }
 
-/* Top bar */
+/* Top blue bar */
 
 .top-bar {
   height: 56px;
@@ -56,6 +56,66 @@ body {
 
 .top-link {
   opacity: 0.9;
+}
+
+/* Legacy-style nav + VoxTalk tab */
+
+.main-nav {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav-tabs-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nav-tab {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #111827;
+  cursor: pointer;
+}
+
+.nav-tab.active {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #111827;
+}
+
+.nav-tab-voxtalk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: #0071dc;
+  color: #f9fafb;
+  border-color: #0071dc;
+  font-weight: 500;
+}
+
+.nav-tab-voxtalk:hover {
+  filter: brightness(1.08);
+}
+
+.nav-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #422006;
 }
 
 /* Content */
@@ -96,42 +156,12 @@ body {
   display: block;
 }
 
-/* VoxTalk launch button */
-
-.voxtalk-launch {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #111827;
-  color: #f9fafb;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.4);
-}
-
-.voxtalk-launch:hover {
-  transform: translateY(-1px);
-}
-
-.voxtalk-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #22c55e;
-}
-
-/* Overlay */
+/* VoxTalk overlay + panel */
 
 .voxtalk-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.55);
   display: none;
   align-items: flex-end;
   justify-content: flex-end;
@@ -278,5 +308,8 @@ body {
     max-width: 100%;
     max-height: 88vh;
   }
-}
 
+  .main-nav {
+    align-items: flex-start;
+  }
+}
