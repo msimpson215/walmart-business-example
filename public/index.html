@@ -1,35 +1,120 @@
-<!doctype html>
-const startBtn = document.getElementById('start-voice');
-const stopBtn = document.getElementById('stop-voice');
-const logEl = document.getElementById('vt-log');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Walmart — AI Grocery Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <!-- Top blue bar -->
+    <header class="top-bar">
+      <div class="logo-area">
+        <span class="logo-spark">✳</span>
+        <span class="logo-text">Walmart</span>
+      </div>
+      <div class="top-bar-right">
+        <span class="top-link">Sign In</span>
+        <span class="top-link">Cart</span>
+      </div>
+    </header>
 
+    <!-- Legacy-style nav -->
+    <nav class="main-nav">
+      <div class="nav-tabs-left">
+        <button class="nav-tab active">All</button>
+        <button class="nav-tab">Grocery</button>
+        <button class="nav-tab">Pickup &amp; delivery</button>
+        <button class="nav-tab">Deals</button>
+        <button class="nav-tab">Services</button>
+      </div>
+    </nav>
 
-function openOverlay() {
-overlay.setAttribute('aria-hidden', 'false');
-document.body.classList.add('no-scroll');
-}
-function closeOverlay() {
-overlay.setAttribute('aria-hidden', 'true');
-document.body.classList.remove('no-scroll');
-}
+    <!-- Long AI assistant bar directly under tabs -->
+    <button class="ai-bar" id="voxtalkTab">
+      <span class="ai-bar-text">Try our Walmart AI Assistant</span>
+      <span class="ai-bar-badge">NEW</span>
+    </button>
 
+    <!-- Main content with Walmart mock -->
+    <main class="content">
+      <section class="hero">
+        <div class="hero-text">
+          <h1>Walmart AI Grocery Assistant</h1>
+          <p>
+            Let our new assistant help you build your cart, find savings, and remember your usuals
+            — then we’ll handle the rest.
+          </p>
+        </div>
 
-openBtn.addEventListener('click', openOverlay);
-closeBtn.addEventListener('click', closeOverlay);
-overlay.querySelector('.scrim').addEventListener('click', closeOverlay);
+        <div class="hero-image">
+          <picture>
+            <source srcset="walmart_mock_mobile.png" media="(max-width: 640px)" />
+            <img src="walmart_mock_.png" alt="Walmart grocery mockup" />
+          </picture>
+        </div>
+      </section>
+    </main>
+  </div>
 
+  <!-- VoxTalk panel appears when the AI bar is clicked -->
+  <div class="voxtalk-overlay" id="voxtalkOverlay">
+    <div class="voxtalk-panel">
+      <div class="voxtalk-header">
+        <div class="voxtalk-title">
+          <span class="voxtalk-icon">🗣️</span>
+          <div>
+            <div class="voxtalk-title-main">Walmart AI Assistant</div>
+            <div class="voxtalk-title-sub">Powered by VoxTalk (demo)</div>
+          </div>
+        </div>
+        <button class="voxtalk-close" id="voxtalkCloseButton">✕</button>
+      </div>
 
-// Placeholder voice controls (no realtime backend wired yet)
-startBtn.addEventListener('click', () => {
-startBtn.disabled = true;
-stopBtn.disabled = false;
-logEl.innerHTML = '<div>🎙️ Voice session started (stub)</div>';
-});
-stopBtn.addEventListener('click', () => {
-startBtn.disabled = false;
-stopBtn.disabled = true;
-logEl.innerHTML += '<div>■ Stopped</div>';
-});
-</script>
+      <div class="voxtalk-body">
+        <div class="voxtalk-bubble bot">
+          Hey Marty, I’m the Walmart AI Assistant. This is just a static demo —
+          this panel is where live voice will plug in.
+        </div>
+        <div class="voxtalk-bubble bot">
+          Try saying: <strong>“Build me a $50 low-sodium grocery list for the week.”</strong>
+        </div>
+        <div class="voxtalk-bubble user">
+          Can you refill everything from my last Walmart pickup, but skip the soda?
+        </div>
+      </div>
+
+      <div class="voxtalk-footer">
+        <input
+          type="text"
+          class="voxtalk-input"
+          placeholder="Voice coming soon… this demo is just for looks."
+          disabled
+        />
+        <button class="voxtalk-mic" disabled>🎙️</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const aiBar = document.getElementById('voxtalkTab');
+    const overlay = document.getElementById('voxtalkOverlay');
+    const closeBtn = document.getElementById('voxtalkCloseButton');
+
+    aiBar.addEventListener('click', () => {
+      overlay.classList.add('open');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('open');
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('open');
+      }
+    });
+  </script>
 </body>
 </html>
