@@ -8,6 +8,7 @@
 </head>
 <body>
   <div class="page">
+    <!-- Top blue bar -->
     <header class="top-bar">
       <div class="logo-area">
         <span class="logo-spark">✳</span>
@@ -19,6 +20,24 @@
       </div>
     </header>
 
+    <!-- Legacy-style nav with VoxTalk tab underneath -->
+    <nav class="main-nav">
+      <div class="nav-tabs-left">
+        <button class="nav-tab active">All</button>
+        <button class="nav-tab">Grocery</button>
+        <button class="nav-tab">Pickup &amp; delivery</button>
+        <button class="nav-tab">Deals</button>
+        <button class="nav-tab">Services</button>
+      </div>
+
+      <!-- VoxTalk tab: looks like part of the site, but special -->
+      <button class="nav-tab nav-tab-voxtalk" id="voxtalkTab">
+        VoxTalk&nbsp;AI Assistant
+        <span class="nav-badge">NEW</span>
+      </button>
+    </nav>
+
+    <!-- Main content with Walmart mock -->
     <main class="content">
       <section class="hero">
         <div class="hero-text">
@@ -37,59 +56,53 @@
         </div>
       </section>
     </main>
+  </div>
 
-    <!-- VoxTalk button -->
-    <button class="voxtalk-launch" id="voxtalkOpenButton">
-      <span class="voxtalk-dot"></span>
-      Talk with VoxTalk
-    </button>
-
-    <!-- VoxTalk overlay -->
-    <div class="voxtalk-overlay" id="voxtalkOverlay">
-      <div class="voxtalk-panel">
-        <div class="voxtalk-header">
-          <div class="voxtalk-title">
-            <span class="voxtalk-icon">🗣️</span>
-            <div>
-              <div class="voxtalk-title-main">VoxTalk for Walmart</div>
-              <div class="voxtalk-title-sub">AI Grocery Assistant (demo)</div>
-            </div>
-          </div>
-          <button class="voxtalk-close" id="voxtalkCloseButton">✕</button>
-        </div>
-
-        <div class="voxtalk-body">
-          <div class="voxtalk-bubble bot">
-            Hey Marty, I’m VoxTalk. This is just a static demo — but this is exactly
-            where live voice will go.
-          </div>
-          <div class="voxtalk-bubble bot">
-            Try saying: <strong>“Build me a $50 low-sodium grocery list for the week.”</strong>
-          </div>
-          <div class="voxtalk-bubble user">
-            Can you refill everything from my last Walmart pickup, but skip the soda?
+  <!-- VoxTalk panel appears when the tab is clicked -->
+  <div class="voxtalk-overlay" id="voxtalkOverlay">
+    <div class="voxtalk-panel">
+      <div class="voxtalk-header">
+        <div class="voxtalk-title">
+          <span class="voxtalk-icon">🗣️</span>
+          <div>
+            <div class="voxtalk-title-main">VoxTalk for Walmart</div>
+            <div class="voxtalk-title-sub">AI Grocery Assistant (demo)</div>
           </div>
         </div>
+        <button class="voxtalk-close" id="voxtalkCloseButton">✕</button>
+      </div>
 
-        <div class="voxtalk-footer">
-          <input
-            type="text"
-            class="voxtalk-input"
-            placeholder="Voice coming soon… this demo is just for looks."
-            disabled
-          />
-          <button class="voxtalk-mic" disabled>🎙️</button>
+      <div class="voxtalk-body">
+        <div class="voxtalk-bubble bot">
+          Hey Marty, I’m VoxTalk. This is just a static demo — but this is exactly
+          where live voice will go.
         </div>
+        <div class="voxtalk-bubble bot">
+          Try saying: <strong>“Build me a $50 low-sodium grocery list for the week.”</strong>
+        </div>
+        <div class="voxtalk-bubble user">
+          Can you refill everything from my last Walmart pickup, but skip the soda?
+        </div>
+      </div>
+
+      <div class="voxtalk-footer">
+        <input
+          type="text"
+          class="voxtalk-input"
+          placeholder="Voice coming soon… this demo is just for looks."
+          disabled
+        />
+        <button class="voxtalk-mic" disabled>🎙️</button>
       </div>
     </div>
   </div>
 
   <script>
-    const openBtn = document.getElementById('voxtalkOpenButton');
-    const closeBtn = document.getElementById('voxtalkCloseButton');
+    const voxtalkTab = document.getElementById('voxtalkTab');
     const overlay = document.getElementById('voxtalkOverlay');
+    const closeBtn = document.getElementById('voxtalkCloseButton');
 
-    openBtn.addEventListener('click', () => {
+    voxtalkTab.addEventListener('click', () => {
       overlay.classList.add('open');
     });
 
@@ -105,4 +118,3 @@
   </script>
 </body>
 </html>
-
