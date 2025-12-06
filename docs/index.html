@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VoxTalk — Walmart AI Grocery Assistant</title>
+  <title>Walmart — AI Grocery Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -20,7 +20,7 @@
       </div>
     </header>
 
-    <!-- Legacy-style nav with VoxTalk tab underneath -->
+    <!-- Legacy-style nav -->
     <nav class="main-nav">
       <div class="nav-tabs-left">
         <button class="nav-tab active">All</button>
@@ -29,13 +29,13 @@
         <button class="nav-tab">Deals</button>
         <button class="nav-tab">Services</button>
       </div>
-
-      <!-- VoxTalk tab: looks like part of the site, but special -->
-      <button class="nav-tab nav-tab-voxtalk" id="voxtalkTab">
-        VoxTalk&nbsp;AI Assistant
-        <span class="nav-badge">NEW</span>
-      </button>
     </nav>
+
+    <!-- Long AI assistant bar directly under tabs -->
+    <button class="ai-bar" id="voxtalkTab">
+      <span class="ai-bar-text">Try our Walmart AI Assistant</span>
+      <span class="ai-bar-badge">NEW</span>
+    </button>
 
     <!-- Main content with Walmart mock -->
     <main class="content">
@@ -43,8 +43,8 @@
         <div class="hero-text">
           <h1>Walmart AI Grocery Assistant</h1>
           <p>
-            Ask VoxTalk to build your cart, find deals, and remember your usuals —
-            all with your voice.
+            Let our new assistant help you build your cart, find savings, and remember your usuals
+            — then we’ll handle the rest.
           </p>
         </div>
 
@@ -58,15 +58,15 @@
     </main>
   </div>
 
-  <!-- VoxTalk panel appears when the tab is clicked -->
+  <!-- VoxTalk panel appears when the AI bar is clicked -->
   <div class="voxtalk-overlay" id="voxtalkOverlay">
     <div class="voxtalk-panel">
       <div class="voxtalk-header">
         <div class="voxtalk-title">
           <span class="voxtalk-icon">🗣️</span>
           <div>
-            <div class="voxtalk-title-main">VoxTalk for Walmart</div>
-            <div class="voxtalk-title-sub">AI Grocery Assistant (demo)</div>
+            <div class="voxtalk-title-main">Walmart AI Assistant</div>
+            <div class="voxtalk-title-sub">Powered by VoxTalk (demo)</div>
           </div>
         </div>
         <button class="voxtalk-close" id="voxtalkCloseButton">✕</button>
@@ -74,8 +74,8 @@
 
       <div class="voxtalk-body">
         <div class="voxtalk-bubble bot">
-          Hey Marty, I’m VoxTalk. This is just a static demo — but this is exactly
-          where live voice will go.
+          Hey Marty, I’m the Walmart AI Assistant. This is just a static demo —
+          this panel is where live voice will plug in.
         </div>
         <div class="voxtalk-bubble bot">
           Try saying: <strong>“Build me a $50 low-sodium grocery list for the week.”</strong>
@@ -98,11 +98,11 @@
   </div>
 
   <script>
-    const voxtalkTab = document.getElementById('voxtalkTab');
+    const aiBar = document.getElementById('voxtalkTab');
     const overlay = document.getElementById('voxtalkOverlay');
     const closeBtn = document.getElementById('voxtalkCloseButton');
 
-    voxtalkTab.addEventListener('click', () => {
+    aiBar.addEventListener('click', () => {
       overlay.classList.add('open');
     });
 
