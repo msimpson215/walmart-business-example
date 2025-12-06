@@ -58,7 +58,7 @@ body {
   opacity: 0.9;
 }
 
-/* Legacy-style nav + VoxTalk tab */
+/* Legacy-style nav */
 
 .main-nav {
   background: #ffffff;
@@ -66,7 +66,6 @@ body {
   padding: 8px 16px 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -93,29 +92,42 @@ body {
   border-color: #111827;
 }
 
-.nav-tab-voxtalk {
-  display: inline-flex;
+/* Long AI assistant bar under tabs */
+
+.ai-bar {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  background: #0f766e;
+  color: #ecfdf5;
+  padding: 10px 16px;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: #0071dc;
-  color: #f9fafb;
-  border-color: #0071dc;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ai-bar:hover {
+  filter: brightness(1.06);
+}
+
+.ai-bar-text {
   font-weight: 500;
 }
 
-.nav-tab-voxtalk:hover {
-  filter: brightness(1.08);
-}
-
-.nav-badge {
-  font-size: 10px;
+.ai-bar-badge {
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 2px 6px;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
   border-radius: 999px;
   background: #facc15;
   color: #422006;
+  transform: rotate(-3deg);
 }
 
 /* Content */
