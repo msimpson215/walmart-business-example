@@ -1,57 +1,144 @@
-/* General reset for modern browsers */
-* {
-    box-sizing: border-box;
+/* ===== Base ===== */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Arial, sans-serif;
+  background: #f5f6f7;
+  color: #111;
 }
 
-/* Base body styles are included in index.html <style> tag for mockup visibility. */
-
-/* --- VOICE BUTTON STYLES (Halo Effect) --- */
-
-/* Base button styles are in index.html, this targets the pulsing */
-
-#aiAssistantBtn.speaking::after {
-    content:"";
-    position:absolute;
-    /* Use inset to cover the full area around the button */
-    inset:-10px; 
-    border-radius:35px; /* Adjust border radius to match the pill shape of the button */
-    border:4px solid rgba(59,130,246,0.75);
-    animation: pulseRing 1.5s ease-in-out infinite;
-    z-index: 1;
-}
-#aiAssistantBtn.speaking::before {
-    content:"";
-    position:absolute;
-    inset:-18px;
-    border-radius:40px;
-    border:3px solid rgba(59,130,246,0.3);
-    animation: pulseTrail 2.3s ease-in-out infinite;
-    z-index: 0;
+/* ===== Navbar ===== */
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-/* The button container needs relative positioning for the halos to work */
-.ai-toolbar { 
-    position: fixed; /* Keep fixed to bottom */
-    /* ... other styles ... */
-}
-#aiAssistantBtn {
-    position: relative; /* CRITICAL: Allows ::before/::after to be positioned */
-    overflow: visible; /* CRITICAL: Allows ::before/::after to render outside the button bounds */
+.brand-bar {
+  padding: 12px 16px;
 }
 
-
-@keyframes pulseRing {
-    0% { transform: scale(1); opacity: 1; }
-    70% { transform: scale(1.05); opacity: 0; } /* Slight adjustment for a softer pill-shaped pulse */
-    100% { transform: scale(1); opacity: 0; }
-}
-@keyframes pulseTrail {
-    0% { transform: scale(1); opacity: 0.5; }
-    70% { transform: scale(1.10); opacity: 0; }
-    100% { transform: scale(1); opacity: 0; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
 }
 
-/* General button states for accessibility */
-#aiAssistantBtn[aria-pressed="true"] {
-    background: #dc2626 !important; /* Red when pressed to indicate recording */
+.brand-main {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.spark {
+  width: 18px;
+  height: 18px;
+}
+
+/* ===== Upload Grocery Bar ===== */
+.tagline {
+  margin: 0;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.tagline-link {
+  background: #0071dc; /* Walmart blue */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tagline-link:hover {
+  background: #004f9a;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.tagline-link:active {
+  transform: translateY(1px);
+}
+
+/* ===== Main ===== */
+.container {
+  padding: 16px;
+}
+
+.portal-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.portal {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* ===== Voice Stage ===== */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.halo-btn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 30% 30%, #3b82f6, #1e40af);
+  color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+.halo-label {
+  position: relative;
+  z-index: 2;
+  font-weight: 600;
+}
+
+.halo {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(59,130,246,0.4);
+  animation: pulse 2.5s infinite;
+}
+
+.r2 { inset: -22px; animation-delay: .6s; }
+.r3 { inset: -32px; animation-delay: 1.2s; }
+
+@keyframes pulse {
+  0% { opacity: .6; }
+  100% { opacity: 0; }
+}
+
+.stop-btn {
+  margin-top: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 40px;
 }
