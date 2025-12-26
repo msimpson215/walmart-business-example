@@ -1,72 +1,326 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Walmart ✳ — VoxTalk™</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8" />
+<title>VoxTalk: Walmart Grocery Commerce Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" /> 
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<style>
+/* --- STYLES FOR MOCKUP LAYOUT (Integrated for Simplicity) --- */
+body {
+    background: #f0f2f5;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    padding-bottom: 100px; /* Space for fixed toolbar */
+}
+.header {
+    background: #0071dc; /* Walmart Blue */
+    color: white;
+    padding: 15px 30px;
+    font-size: 24px;
+    font-weight: bold;
+}
+.main-content {
+    padding: 20px 30px;
+}
+/* Cart Area */
+.cart-summary {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.cart-summary ul {
+    list-style: none;
+    padding: 0;
+}
+.cart-summary li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+}
+.cart-summary h3 {
+    color: #333;
+    border-bottom: 2px solid #ffc220;
+    padding-bottom: 5px;
+}
+/* AI Button Area */
+.ai-toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#aiAssistantBtn {
+    width: 80%; 
+    max-width: 700px;
+    background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+}
+#aiAssistantBtn:active {
+    transform: scale(0.98);
+}
+.add-btn {
+    background: #ffc220; /* Walmart Yellow */
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
 </head>
 <body>
-
-  <header class="navbar">
-    <div class="brand-bar">
-      <h1 class="brand">
-        <span class="brand-main">Walmart</span>
-        <span class="brand-icon" aria-label="spark">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="spark">
-            <path fill="#fdb913" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(60 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(120 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(180 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(240 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(300 32 32)" d="M31 0h2v22h-2z"/>
-          </svg>
-        </span>
-      </h1>
+<div class="header">
+    🛒 Walmart Grocery (Mockup)
+</div>
+<div class="main-content">
+    <div class="cart-summary">
+        <h3>Shopping Cart</h3>
+        <ul id="cart-list">
+            </ul>
+        <p>Total: <strong id="cart-total">$0.00</strong></p>
+        <button class="add-btn" style="float: right;">Proceed to Checkout</button>
     </div>
+    
+    <h2>Recommended Items</h2>
+    <div class="product-card">...</div> 
+</div>
 
-    <!-- Upload bar -->
-    <p class="tagline">
-      <button id="taglineUpload" class="tagline-link">
-        Upload your grocery list here
-      </button>
-    </p>
-  </header>
+<div class="ai-toolbar">
+    <button id="aiAssistantBtn" aria-pressed="false">
+        Try Our AI Shopping Assistant: Click to Speak
+    </button>
+</div>
 
-  <main class="container">
+<audio id="remote" autoplay playsinline></audio>
 
-    <div class="portal-row">
-      <button class="portal">🛒 Cart</button>
-      <button class="portal">ℹ️ Info</button>
-      <button class="portal" onclick="window.open('https://www.walmart.com','_blank')">💳 Checkout</button>
-    </div>
+<script>
+const aiAssistantBtn = document.getElementById('aiAssistantBtn');
+const rtAudio = document.getElementById('remote');
+const cartList = document.getElementById('cart-list');
+const cartTotalElement = document.getElementById('cart-total');
 
-    <div class="stage">
-      <button id="haloBtn" class="halo-btn" type="button">
-        <div class="halo ring r1"></div>
-        <div class="halo ring r2"></div>
-        <div class="halo ring r3"></div>
-        <span id="haloLabel" class="halo-label">Click to Talk</span>
-      </button>
+// Commerce Data Mockup
+const productCatalog = {
+    'milk': { price: 3.99, img: 'https://via.placeholder.com/100x100?text=Milk' },
+    'carrots': { price: 1.79, img: 'https://via.placeholder.com/100x100?text=Carrots' },
+    'bread': { price: 4.50, img: 'https://via.placeholder.com/100x100?text=Bread' },
+    'eggs': { price: 2.88, img: 'https://via.placeholder.com/100x100?text=Eggs' }
+};
+let cart = {};
 
-      <audio id="remote" autoplay playsinline></audio>
-      <button id="stopBtn" class="stop-btn hidden" type="button">Pause Voice</button>
-    </div>
+// State variables for voice interaction (PULSE/PTT LOGIC)
+let listening = false; 
+let is_first_turn = true; 
 
-    <footer class="footer">
-      © 2025 • Powered by VoxTalk — A Comfortable AI Experience
-    </footer>
+// --- COMMERCE FUNCTIONS (MOCK BACKEND) ---
 
-  </main>
+function updateCartDisplay() {
+    let total = 0;
+    cartList.innerHTML = '';
+    
+    for (const item in cart) {
+        const { quantity, price } = cart[item];
+        const subtotal = quantity * price;
+        total += subtotal;
+        
+        const li = document.createElement('li');
+        li.textContent = `${item} x ${quantity}`;
+        li.innerHTML += `<span>$${subtotal.toFixed(2)}</span>`;
+        cartList.appendChild(li);
+    }
+    
+    cartTotalElement.textContent = `$${total.toFixed(2)}`;
+    return `Your cart total is now $${total.toFixed(2)}.`;
+}
 
-  <script>
-    // Upload placeholder
-    const fileUpload = document.createElement("input");
-    fileUpload.type = "file";
-    fileUpload.hidden = true;
-    document.body.appendChild(fileUpload);
-    document.getElementById("taglineUpload").onclick = () => fileUpload.click();
-  </script>
+function addItemToCart(item, quantity = 1) {
+    const itemName = item.toLowerCase();
+    const productInfo = productCatalog[itemName];
 
+    if (productInfo) {
+        if (cart[itemName]) {
+            cart[itemName].quantity += quantity;
+        } else {
+            cart[itemName] = { quantity: quantity, price: productInfo.price };
+        }
+        const summary = updateCartDisplay();
+        return `Okay, I added ${quantity} ${itemName}. ${summary}`;
+    } else {
+        return `I'm sorry, I couldn't find ${item} in the Walmart catalog. Can you search for something else?`;
+    }
+}
+
+function checkPrice(item) {
+    const itemName = item.toLowerCase();
+    const productInfo = productCatalog[itemName];
+
+    if (productInfo) {
+        return `The current price for ${itemName} is $${productInfo.price.toFixed(2)}. Would you like me to add it to your cart?`;
+    } else {
+        return `I don't have a price for ${item}.`;
+    }
+}
+
+
+// --- VOICE INTERACTION LOGIC (Pulsing and State) ---
+
+function setAIPulsing(on) {
+    if (on) {
+        // AI START: Only pulse if we are ready AND the user isn't pressing PTT
+        if (aiAssistantBtn.getAttribute('aria-pressed') !== 'true') {
+            aiAssistantBtn.classList.add('speaking');
+        }
+    } else {
+        // AI END: Remove the class instantly
+        aiAssistantBtn.classList.remove('speaking');
+    }
+}
+
+let pc = null;
+let micTrack = null;
+
+// CRITICAL START HOOK: Use the audio element's "playing" event
+rtAudio.onplaying = () => {
+    // 1. START the pulse the moment audio begins, BUT ONLY IF IT'S NOT THE FIRST TURN.
+    if (!is_first_turn) { 
+        setAIPulsing(true);
+    }
+    
+    // 2. Ensure user mic is OFF if the AI is talking (interruptibility)
+    if (listening) {
+        listening = false;
+        if (micTrack) micTrack.enabled = false;
+        aiAssistantBtn.setAttribute('aria-pressed', 'false');
+    }
+};
+
+async function initRealtime() {
+    try {
+        const s = await fetch("/session", { method:"POST" });
+        const { client_secret, model, voice } = await s.json();
+
+        if (pc) {
+            pc.close();
+            pc = null;
+        }
+
+        pc = new RTCPeerConnection();
+        const mic = await navigator.mediaDevices.getUserMedia({ audio:true });
+        micTrack = mic.getTracks()[0];
+        micTrack.enabled = false;
+        pc.addTrack(micTrack, mic);
+        
+        pc.ontrack = (ev) => {
+            rtAudio.srcObject = ev.streams[0];
+            rtAudio.play().catch(()=>{});
+        };
+
+        const dc = pc.createDataChannel("events");
+        dc.onmessage = (e) => {
+            try {
+                const evt = JSON.parse(e.data);
+
+                // --- TOOL CALLING LOGIC (MOCK) ---
+                if (evt.type === "response.tool_call") {
+                    const toolName = evt.tool_call.function.name;
+                    const args = JSON.parse(evt.tool_call.function.arguments);
+                    
+                    let result = "";
+                    if (toolName === 'addItemToCart') {
+                        result = addItemToCart(args.item, args.quantity || 1);
+                    } else if (toolName === 'checkPrice') {
+                        result = checkPrice(args.item);
+                    }
+                    console.log(`[TOOL CALL] Executed ${toolName}. Result: ${result}`);
+                    
+                    // In a full implementation, you'd send the result back to the AI here.
+                    // For the mock, the AI is prompted to respond based on the known tools.
+                }
+
+
+                // AI END HOOK: Use the confirmed end of the AI audio stream to stop the pulse
+                if (evt.type === "response.audio.done" || evt.type === "output_audio_buffer.stopped") {
+                    setAIPulsing(false); 
+                    console.log("AI Audio Done. Pulse Stopped.");
+                    
+                    is_first_turn = false; 
+                }
+            } catch(err) {
+                console.error("Parse error:", e.data, err);
+            }
+        };
+
+        const offer = await pc.createOffer({ offerToReceiveAudio:true });
+        await pc.setLocalDescription(offer);
+
+        const r = await fetch(
+            `https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}&voice=${voice}`,
+            {
+                method:"POST",
+                headers: {
+                    "Authorization":`Bearer ${client_secret.value}`,
+                    "Content-Type":"application/sdp"
+                },
+                body: offer.sdp
+            }
+        );
+
+        const answer = { type:"answer", sdp: await r.text() };
+        await pc.setRemoteDescription(answer);
+
+    } catch(err) {
+        console.error("Realtime init failed", err);
+    }
+}
+
+// PTT button logic (User Input Control ONLY)
+aiAssistantBtn.onclick = () => {
+    listening = !listening;
+    
+    if (micTrack) micTrack.enabled = listening;
+
+    if (listening) {
+        console.log("PTT Button Clicked ON. Mic enabled.");
+
+        // Immediately kill the AI pulse when the user takes over.
+        setAIPulsing(false);
+        
+        aiAssistantBtn.setAttribute('aria-pressed', 'true');
+        
+    } else {
+        console.log("PTT Button Clicked OFF. Mic disabled. Waiting for AI response...");
+        
+        rtAudio.pause();
+        rtAudio.currentTime = 0;
+        rtAudio.srcObject = null;
+        
+        aiAssistantBtn.setAttribute('aria-pressed', 'false');
+    }
+};
+
+initRealtime();
+</script>
 </body>
 </html>
