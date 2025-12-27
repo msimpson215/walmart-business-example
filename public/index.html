@@ -1,3 +1,4 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,106 +11,140 @@
 
 <header class="navbar">
   <div class="brand">
-    <span class="spark">✳</span>
+    <span class="spark" aria-hidden="true">✳</span>
     <span class="brand-main">Walmart</span>
   </div>
+
   <div class="nav-right">
-    <button id="infoBtn">Info</button>
-    <button>Cart</button>
-    <button>Checkout</button>
+    <button class="nav-btn" id="infoBtn" type="button">Info</button>
+    <button class="nav-btn" type="button">Cart</button>
+    <button class="nav-btn" type="button">Checkout</button>
   </div>
 </header>
 
 <main class="container">
   <section class="hero">
-    <picture>
+    <div class="hero-top">
+      <button class="tagline-upload" id="uploadBtn" type="button">Upload grocery list</button>
+      <input id="fileInput" class="hidden" type="file" accept=".txt,.pdf,.png,.jpg,.jpeg" />
+    </div>
+
+    <picture class="hero-picture">
       <source srcset="walmart_mock_mobile.png" media="(max-width: 640px)" />
       <img src="walmart_mock_.png" alt="Walmart mock" />
     </picture>
+
+    <div class="upload-note" id="uploadNote" aria-live="polite"></div>
   </section>
 
   <section class="stage">
-    <button class="halo-btn" id="startBtn">
-      <span class="ring r1"></span>
-      <span class="ring r2"></span>
-      <span class="ring r3"></span>
-      <span class="label">Tap to Talk</span>
+    <button class="halo-btn" id="startBtn" type="button" aria-label="Tap to Talk">
+      <span class="halo r1" aria-hidden="true"></span>
+      <span class="halo r2" aria-hidden="true"></span>
+      <span class="halo r3" aria-hidden="true"></span>
+      <span class="halo-label">Tap to Talk</span>
     </button>
-    <button class="stop-btn hidden" id="stopBtn">Pause</button>
+
+    <button class="stop-btn hidden" id="stopBtn" type="button">Pause</button>
   </section>
 
   <section class="quiet">
-    <form id="quietForm">
-      <input id="quietInput" placeholder="Type here for privacy…" />
-      <button type="submit">Send</button>
-      <button type="button" id="micBtn">🎙️</button>
-      <button type="button" id="humanBtn">Contact human</button>
+    <form class="quiet-form" id="quietForm">
+      <input class="quiet-input" id="quietInput" placeholder="Type here for privacy…" autocomplete="off" />
+      <button class="pill send-btn" type="submit">Send</button>
+      <button class="pill mic-btn" type="button" id="micBtn" title="Mic (demo)">🎙️</button>
+      <button class="pill ghost" type="button" id="humanBtn">Contact human</button>
     </form>
+
     <div class="thread" id="thread"></div>
   </section>
 </main>
 
-<div class="modal hidden" id="infoModal">
+<!-- Info modal -->
+<div class="modal hidden" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="modal-content">
-    <h2>About VoxTalk</h2>
-    <p>Walmart-style voice + quiet text assistant demo.</p>
-    <button id="closeInfo">Close</button>
+    <h2 id="infoTitle">About VoxTalk</h2>
+    <p>This is the Walmart-style voice + quiet text assistant demo. (UI-only stub.)</p>
+    <button class="pill send-btn" id="closeInfo" type="button">Close</button>
   </div>
 </div>
 
+<a class="corner-btn left" href="/api/health" target="_blank" rel="noreferrer">Health</a>
+<a class="corner-btn right" href="#" id="helpBtn">Help</a>
+
 <script>
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
-const thread = document.getElementById("thread");
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn  = document.getElementById("stopBtn");
+  const thread   = document.getElementById("thread");
 
-const infoBtn = document.getElementById("infoBtn");
-const infoModal = document.getElementById("infoModal");
-const closeInfo = document.getElementById("closeInfo");
+  const infoBtn   = document.getElementById("infoBtn");
+  const infoModal = document.getElementById("infoModal");
+  const closeInfo = document.getElementById("closeInfo");
 
-startBtn.onclick = () => {
-  startBtn.disabled = true;
-  stopBtn.classList.remove("hidden");
-  add("bot","Voice started (demo)");
-};
+  const uploadBtn  = document.getElementById("uploadBtn");
+  const fileInput  = document.getElementById("fileInput");
+  const uploadNote = document.getElementById("uploadNote");
 
-stopBtn.onclick = () => {
-  startBtn.disabled = false;
-  stopBtn.classList.add("hidden");
-  add("bot","Paused");
-};
+  function add(who, text){
+    const d = document.createElement("div");
+    d.className = "msg " + who;
+    d.textContent = text;
+    thread.appendChild(d);
+    thread.scrollTop = thread.scrollHeight;
+  }
 
-infoBtn.onclick = () => {
-  infoModal.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-};
-closeInfo.onclick = closeModal;
-infoModal.onclick = e => e.target === infoModal && closeModal();
+  // Voice button (UI stub)
+  startBtn.onclick = () => {
+    startBtn.disabled = true;
+    stopBtn.classList.remove("hidden");
+    add("bot","🎙️ Voice started (demo)");
+  };
 
-function closeModal(){
-  infoModal.classList.add("hidden");
-  document.body.style.overflow = "";
-}
+  stopBtn.onclick = () => {
+    startBtn.disabled = false;
+    stopBtn.classList.add("hidden");
+    add("bot","⏸️ Paused");
+  };
 
-function add(who,text){
-  const d=document.createElement("div");
-  d.className="msg "+who;
-  d.textContent=text;
-  thread.appendChild(d);
-  thread.scrollTop=thread.scrollHeight;
-}
+  // Info modal
+  function closeModal(){
+    infoModal.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+  infoBtn.onclick = () => {
+    infoModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  };
+  closeInfo.onclick = closeModal;
+  infoModal.onclick = (e) => { if (e.target === infoModal) closeModal(); };
 
-document.getElementById("quietForm").onsubmit = e=>{
-  e.preventDefault();
-  const v=document.getElementById("quietInput").value.trim();
-  if(!v)return;
-  add("user",v);
-  document.getElementById("quietInput").value="";
-  add("bot","Got it (demo)");
-};
+  // Quiet chat (UI stub)
+  document.getElementById("quietForm").onsubmit = (e) => {
+    e.preventDefault();
+    const v = document.getElementById("quietInput").value.trim();
+    if(!v) return;
+    add("user", v);
+    document.getElementById("quietInput").value = "";
+    add("bot", "Got it (demo)");
+  };
 
-document.getElementById("humanBtn").onclick=()=>{
-  add("bot","Connecting to a human (demo)");
-};
+  document.getElementById("humanBtn").onclick = () => add("bot","Connecting to a human (demo) …");
+  document.getElementById("micBtn").onclick   = () => add("bot","Mic pressed (demo) …");
+
+  // Upload (UI stub)
+  uploadBtn.onclick = () => fileInput.click();
+  fileInput.onchange = () => {
+    const f = fileInput.files && fileInput.files[0];
+    if (!f) return;
+    uploadNote.textContent = `Loaded: ${f.name} (demo — not processed yet)`;
+    add("bot", `📎 Grocery list uploaded: ${f.name} (demo)`);
+  };
+
+  // Help
+  document.getElementById("helpBtn").onclick = (e) => {
+    e.preventDefault();
+    add("bot","Try: “Build a $50 grocery list” (demo)");
+  };
 </script>
 
 </body>
