@@ -1,251 +1,176 @@
-:root{
-  --wm-blue:#1e5eff;
-  --wm-blue-dark:#123fb3;
-  --wm-yellow:#fdb913;
-  --ink:#0b1220;
-  --bg:#f6f8fb;
-  --card:#ffffff;
-  --line:#e6e8ee;
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
-  --radius: 16px;
-  --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walmart Voice AI Demo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--ink);
-}
+    <nav class="navbar">
+        <div class="brand-bar">
+            <div class="brand">
+                <span class="brand-main">Walmart</span>
+                <span class="brand-sub">Business</span>
+            </div>
+        </div>
+        <div class="tagline">
+            <button class="tagline-upload">Upload Manifest</button>
+        </div>
+    </nav>
 
-/* Top nav */
-.navbar{
-  background: linear-gradient(90deg, #0f2a7a, var(--wm-blue));
-  color:#fff;
-  padding:14px 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.15);
-}
-.brand-bar{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.brand{
-  margin:0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:800;
-  letter-spacing:.2px;
-}
-.brand-main{font-size:22px;}
-.spark{width:26px;height:26px;display:block}
+    <main class="container">
+        <div class="portal-row">
+            <button class="portal" id="infoTrigger">Info</button>
+            <button class="portal">Orders</button>
+            <button class="portal">Settings</button>
+        </div>
 
-/* Upload button in tagline */
-.tagline{
-  margin:10px 0 0;
-  display:flex;
-  justify-content:center;
-}
-.tagline-upload{
-  appearance:none;
-  border:none;
-  background: var(--wm-blue);
-  color:#fff;
-  font: inherit;              /* same font */
-  font-weight:700;
-  padding:10px 14px;
-  border-radius: 999px;
-  cursor:pointer;
-  box-shadow: 0 8px 18px rgba(30,94,255,.25);
-}
-.tagline-upload:hover{ background: var(--wm-blue-dark); }
-.tagline-upload:active{ transform: translateY(1px); }
+        <div class="stage">
+            <button class="halo-btn" id="startBtn">
+                <div class="halo r1"></div>
+                <div class="halo r2"></div>
+                <div class="halo r3"></div>
+                <span class="halo-label">TAP TO START</span>
+            </button>
+            <button class="stop-btn hidden" id="stopBtn">STOP SESSION</button>
+        </div>
 
-/* Layout */
-.container{
-  max-width: 960px;
-  margin: 18px auto 70px;
-  padding: 0 14px;
-}
+        <div class="quiet">
+            <div class="thread" id="chatThread">
+                <div class="msg bot">System: Voice session ready.</div>
+            </div>
+            <form class="quiet-form" id="chatForm">
+                <input type="text" class="quiet-input" placeholder="Type a message..." id="chatInput">
+                <button type="submit" class="pill send-btn">Send</button>
+            </form>
+        </div>
+    </main>
 
-.portal-row{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin: 10px 0 16px;
-}
-.portal{
-  border:1px solid var(--line);
-  background: var(--card);
-  padding:10px 14px;
-  border-radius: 999px;
-  cursor:pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,.05);
-  font: inherit;
-  font-weight:600;
-}
-.portal:hover{ transform: translateY(-1px); }
+    <div class="modal hidden" id="infoModal">
+        <div class="modal-content">
+            <h2>Project Info</h2>
+            <p>This is a Walmart Business Voice AI concept powered by OpenAI Realtime.</p>
+            <p>Current Status: <span style="color:green">Connected to Render</span></p>
+            <button class="pill ghost" id="closeModal">Close</button>
+        </div>
+    </div>
 
-/* Stage */
-.stage{
-  display:grid;
-  place-items:center;
-  padding: 18px 0 8px;
-}
+    <footer class="footer">
+        &copy; 2024 Walmart Voice AI Demo
+    </footer>
 
-.halo-btn{
-  position:relative;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle at 30% 30%, #3b82f6, #1e40af);
-  cursor:pointer;
-  box-shadow: 0 14px 35px rgba(30,64,175,.25);
-  outline:none;
-}
-.halo-label{
-  position:relative;
-  z-index:2;
-  color:#fff;
-  font-weight:800;
-  letter-spacing:.2px;
-}
-.halo{
-  position:absolute;
-  inset:-10px;
-  border-radius:50%;
-  border: 3px solid rgba(59,130,246,0.55);
-  opacity:0;
-  transform: scale(.85);
-}
-.r2{ inset:-20px; border-width:2px; border-color: rgba(147,197,253,0.55); }
-.r3{ inset:-32px; border-width:2px; border-color: rgba(253,185,19,0.35); }
+    <script>
+        const infoTrigger = document.getElementById('infoTrigger');
+        const infoModal = document.getElementById('infoModal');
+        const closeModal = document.getElementById('closeModal');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatThread = document.getElementById('chatThread');
 
-.halo-btn:disabled{ opacity:.85; cursor:default; }
+        // --- UI TOGGLES ---
+        infoTrigger.onclick = () => infoModal.classList.remove('hidden');
+        closeModal.onclick = () => infoModal.classList.add('hidden');
+        window.onclick = (e) => { if(e.target === infoModal) infoModal.classList.add('hidden'); };
 
-.halo-btn:not(:disabled) .r1{ animation: pulse1 1.9s ease-in-out infinite; }
-.halo-btn:not(:disabled) .r2{ animation: pulse2 2.6s ease-in-out infinite; }
-.halo-btn:not(:disabled) .r3{ animation: pulse3 3.2s ease-in-out infinite; }
+        // --- REALTIME SESSION LOGIC ---
+        let peerConnection = null;
 
-@keyframes pulse1{
-  0%{opacity:.55; transform:scale(.9)}
-  70%{opacity:0; transform:scale(1.32)}
-  100%{opacity:0; transform:scale(1.32)}
-}
-@keyframes pulse2{
-  0%{opacity:.35; transform:scale(.85)}
-  70%{opacity:0; transform:scale(1.55)}
-  100%{opacity:0; transform:scale(1.55)}
-}
-@keyframes pulse3{
-  0%{opacity:.25; transform:scale(.85)}
-  70%{opacity:0; transform:scale(1.72)}
-  100%{opacity:0; transform:scale(1.72)}
-}
+        async function startSession() {
+            try {
+                startBtn.disabled = true;
+                startBtn.querySelector('.halo-label').innerText = "CONNECTING...";
 
-.stop-btn{
-  margin-top:12px;
-  border:none;
-  background:#111827;
-  color:#fff;
-  font: inherit;
-  font-weight:700;
-  padding:10px 14px;
-  border-radius: 999px;
-  cursor:pointer;
-}
-.hidden{ display:none; }
+                const resp = await fetch("/session", { method: "POST" });
+                const data = await resp.json();
+                
+                if (!data.client_secret) throw new Error("No secret returned");
 
-/* Quiet chat */
-.quiet{
-  margin-top: 18px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 14px;
-}
-.quiet-form{
-  display:flex;
-  gap:8px;
-}
-.quiet-input{
-  flex:1;
-  padding:12px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  font: inherit;
-}
-.pill{
-  border:none;
-  border-radius: 999px;
-  padding: 10px 12px;
-  font: inherit;
-  font-weight:700;
-  cursor:pointer;
-}
-.send-btn{ background: var(--wm-blue); color:#fff; }
-.send-btn:hover{ background: var(--wm-blue-dark); }
-.mic-btn{ background:#f3f4f6; }
-.ghost{ background: transparent; border: 1px solid var(--line); }
+                const EPHEMERAL_KEY = data.client_secret;
+                peerConnection = new RTCPeerConnection();
 
-.thread{
-  margin-top: 12px;
-  max-height: 240px;
-  overflow:auto;
-  padding: 10px;
-  border: 1px dashed var(--line);
-  border-radius: 12px;
-  background: #fbfcff;
-}
-.msg{ padding: 8px 10px; border-radius: 12px; margin: 6px 0; }
-.msg.user{ background: #eef2ff; }
-.msg.bot{ background: #ecfeff; }
+                // Handle Audio
+                const audioEl = document.createElement("audio");
+                audioEl.autoplay = true;
+                peerConnection.ontrack = e => audioEl.srcObject = e.streams[0];
 
-/* Modals */
-.modal{
-  position:fixed;
-  inset:0;
-  background: rgba(0,0,0,.55);
-  display:grid;
-  place-items:center;
-  padding: 18px;
-}
-.modal-content{
-  width:min(520px, 92vw);
-  background: var(--card);
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  padding: 16px;
-}
-.modal-content h2{ margin: 0 0 10px; }
-.modal-content a{ color: var(--wm-blue); }
+                const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+                peerConnection.addTrack(ms.getTracks()[0]);
 
-.footer{
-  text-align:center;
-  padding: 18px;
-  color:#4b5563;
-  font-size: 13px;
-}
+                // Create Data Channel
+                const dc = peerConnection.createDataChannel("oai-events");
+                dc.onmessage = (e) => {
+                    const event = JSON.parse(e.data);
+                    if (event.type === "response.audio_transcript.done") {
+                        appendMsg("bot", event.transcript);
+                    }
+                };
 
-/* Corners */
-.corner-btn{
-  position: fixed;
-  bottom: 14px;
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--ink);
-  text-decoration:none;
-  font: inherit;
-  font-weight:700;
-  box-shadow: 0 6px 14px rgba(0,0,0,.08);
-}
-.corner-btn.left{ left: 14px; }
-.corner-btn.right{ right: 14px; }
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+
+                const baseUrl = "https://api.openai.com/v1/realtime";
+                const model = data.model || "gpt-4o-realtime-preview";
+                const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+                    method: "POST",
+                    body: offer.sdp,
+                    headers: {
+                        Authorization: `Bearer ${EPHEMERAL_KEY}`,
+                        "Content-Type": "application/sdp"
+                    }
+                });
+
+                const answer = { type: "answer", sdp: await sdpResponse.text() };
+                await peerConnection.setRemoteDescription(answer);
+
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                alert("Could not start session.");
+                startBtn.disabled = false;
+                startBtn.querySelector('.halo-label').innerText = "TAP TO START";
+            }
+        }
+
+        function stopSession() {
+            if (peerConnection) peerConnection.close();
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            startBtn.disabled = false;
+            startBtn.querySelector('.halo-label').innerText = "TAP TO START";
+        }
+
+        function appendMsg(role, text) {
+            const div = document.createElement('div');
+            div.className = `msg ${role}`;
+            div.innerText = text;
+            chatThread.appendChild(div);
+            chatThread.scrollTop = chatThread.scrollHeight;
+        }
+
+        startBtn.onclick = startSession;
+        stopBtn.onclick = stopSession;
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const val = chatInput.value.trim();
+            if(!val) return;
+            appendMsg("user", val);
+            chatInput.value = "";
+            
+            const r = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ prompt: val })
+            });
+            const d = await r.json();
+            appendMsg("bot", d.reply);
+        };
+    </script>
+</body>
+</html>
