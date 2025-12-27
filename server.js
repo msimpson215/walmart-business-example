@@ -9,20 +9,25 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(helmet({
-    contentSecurityPolicy: false // Allows WebRTC/OpenAI connections
-}));
+app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
+// Serve static frontend
 app.use(express.static(path.join(__dirname, "public")));
 
+// Health check
 app.get("/healthz", (req, res) => res.status(200).send("ok"));
 
+// ---- Realtime session endpoint ----
+// Frontend calls: fetch("/session", { method:"POST" })
+// Requires env var: OPENAI_API_KEY
 app.post("/session", async (req, res) => {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "Missing OPENAI_API_KEY" });
+    if (!apiKey) {
+      return res.status(500).json({ error: "Missing OPENAI_API_KEY in env." });
+    }
 
     const model = process.env.REALTIME_MODEL || "gpt-4o-realtime-preview";
     const voice = process.env.REALTIME_VOICE || "alloy";
@@ -30,7 +35,7 @@ app.post("/session", async (req, res) => {
     const r = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -39,24 +44,35 @@ app.post("/session", async (req, res) => {
       })
     });
 
-    const data = await r.json();
-    if (!r.ok) return res.status(r.status).json({ error: "OpenAI error", details: data });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      return res.status(r.status).json({
+        error: "OpenAI client secret creation failed",
+        details: data
+      });
+    }
 
     return res.json({ client_secret: data.client_secret, model, voice });
   } catch (err) {
-    return res.status(500).json({ error: "Server error", message: err.message });
+    return res.status(500).json({
+      error: "Server /session error",
+      message: err?.message || String(err)
+    });
   }
 });
 
+// ---- Quiet chat endpoint (placeholder) ----
 app.post("/chat", async (req, res) => {
-  const prompt = req.body?.prompt || "";
-  return res.json({ reply: `Demo mode: I heard "${prompt}".` });
+  const prompt = (req.body?.prompt || "").toString();
+  return res.json({ reply: `Demo mode: I heard "${prompt}". (Hook to model later.)` });
 });
 
+// SPA fallback
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Render requires process.env.PORT
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server listening on ${PORT}`);
