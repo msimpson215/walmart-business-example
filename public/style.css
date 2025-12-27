@@ -1,57 +1,251 @@
-/* General reset for modern browsers */
-* {
-    box-sizing: border-box;
+:root{
+  --wm-blue:#1e5eff;
+  --wm-blue-dark:#123fb3;
+  --wm-yellow:#fdb913;
+  --ink:#0b1220;
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --line:#e6e8ee;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --radius: 16px;
+  --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Base body styles are included in index.html <style> tag for mockup visibility. */
-
-/* --- VOICE BUTTON STYLES (Halo Effect) --- */
-
-/* Base button styles are in index.html, this targets the pulsing */
-
-#aiAssistantBtn.speaking::after {
-    content:"";
-    position:absolute;
-    /* Use inset to cover the full area around the button */
-    inset:-10px; 
-    border-radius:35px; /* Adjust border radius to match the pill shape of the button */
-    border:4px solid rgba(59,130,246,0.75);
-    animation: pulseRing 1.5s ease-in-out infinite;
-    z-index: 1;
-}
-#aiAssistantBtn.speaking::before {
-    content:"";
-    position:absolute;
-    inset:-18px;
-    border-radius:40px;
-    border:3px solid rgba(59,130,246,0.3);
-    animation: pulseTrail 2.3s ease-in-out infinite;
-    z-index: 0;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--ink);
 }
 
-/* The button container needs relative positioning for the halos to work */
-.ai-toolbar { 
-    position: fixed; /* Keep fixed to bottom */
-    /* ... other styles ... */
+/* Top nav */
+.navbar{
+  background: linear-gradient(90deg, #0f2a7a, var(--wm-blue));
+  color:#fff;
+  padding:14px 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.15);
 }
-#aiAssistantBtn {
-    position: relative; /* CRITICAL: Allows ::before/::after to be positioned */
-    overflow: visible; /* CRITICAL: Allows ::before/::after to render outside the button bounds */
+.brand-bar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.brand{
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.brand-main{font-size:22px;}
+.spark{width:26px;height:26px;display:block}
+
+/* Upload button in tagline */
+.tagline{
+  margin:10px 0 0;
+  display:flex;
+  justify-content:center;
+}
+.tagline-upload{
+  appearance:none;
+  border:none;
+  background: var(--wm-blue);
+  color:#fff;
+  font: inherit;              /* same font */
+  font-weight:700;
+  padding:10px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+  box-shadow: 0 8px 18px rgba(30,94,255,.25);
+}
+.tagline-upload:hover{ background: var(--wm-blue-dark); }
+.tagline-upload:active{ transform: translateY(1px); }
+
+/* Layout */
+.container{
+  max-width: 960px;
+  margin: 18px auto 70px;
+  padding: 0 14px;
 }
 
+.portal-row{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin: 10px 0 16px;
+}
+.portal{
+  border:1px solid var(--line);
+  background: var(--card);
+  padding:10px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,.05);
+  font: inherit;
+  font-weight:600;
+}
+.portal:hover{ transform: translateY(-1px); }
 
-@keyframes pulseRing {
-    0% { transform: scale(1); opacity: 1; }
-    70% { transform: scale(1.05); opacity: 0; } /* Slight adjustment for a softer pill-shaped pulse */
-    100% { transform: scale(1); opacity: 0; }
-}
-@keyframes pulseTrail {
-    0% { transform: scale(1); opacity: 0.5; }
-    70% { transform: scale(1.10); opacity: 0; }
-    100% { transform: scale(1); opacity: 0; }
+/* Stage */
+.stage{
+  display:grid;
+  place-items:center;
+  padding: 18px 0 8px;
 }
 
-/* General button states for accessibility */
-#aiAssistantBtn[aria-pressed="true"] {
-    background: #dc2626 !important; /* Red when pressed to indicate recording */
+.halo-btn{
+  position:relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 30% 30%, #3b82f6, #1e40af);
+  cursor:pointer;
+  box-shadow: 0 14px 35px rgba(30,64,175,.25);
+  outline:none;
 }
+.halo-label{
+  position:relative;
+  z-index:2;
+  color:#fff;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.halo{
+  position:absolute;
+  inset:-10px;
+  border-radius:50%;
+  border: 3px solid rgba(59,130,246,0.55);
+  opacity:0;
+  transform: scale(.85);
+}
+.r2{ inset:-20px; border-width:2px; border-color: rgba(147,197,253,0.55); }
+.r3{ inset:-32px; border-width:2px; border-color: rgba(253,185,19,0.35); }
+
+.halo-btn:disabled{ opacity:.85; cursor:default; }
+
+.halo-btn:not(:disabled) .r1{ animation: pulse1 1.9s ease-in-out infinite; }
+.halo-btn:not(:disabled) .r2{ animation: pulse2 2.6s ease-in-out infinite; }
+.halo-btn:not(:disabled) .r3{ animation: pulse3 3.2s ease-in-out infinite; }
+
+@keyframes pulse1{
+  0%{opacity:.55; transform:scale(.9)}
+  70%{opacity:0; transform:scale(1.32)}
+  100%{opacity:0; transform:scale(1.32)}
+}
+@keyframes pulse2{
+  0%{opacity:.35; transform:scale(.85)}
+  70%{opacity:0; transform:scale(1.55)}
+  100%{opacity:0; transform:scale(1.55)}
+}
+@keyframes pulse3{
+  0%{opacity:.25; transform:scale(.85)}
+  70%{opacity:0; transform:scale(1.72)}
+  100%{opacity:0; transform:scale(1.72)}
+}
+
+.stop-btn{
+  margin-top:12px;
+  border:none;
+  background:#111827;
+  color:#fff;
+  font: inherit;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius: 999px;
+  cursor:pointer;
+}
+.hidden{ display:none; }
+
+/* Quiet chat */
+.quiet{
+  margin-top: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+.quiet-form{
+  display:flex;
+  gap:8px;
+}
+.quiet-input{
+  flex:1;
+  padding:12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font: inherit;
+}
+.pill{
+  border:none;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+.send-btn{ background: var(--wm-blue); color:#fff; }
+.send-btn:hover{ background: var(--wm-blue-dark); }
+.mic-btn{ background:#f3f4f6; }
+.ghost{ background: transparent; border: 1px solid var(--line); }
+
+.thread{
+  margin-top: 12px;
+  max-height: 240px;
+  overflow:auto;
+  padding: 10px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: #fbfcff;
+}
+.msg{ padding: 8px 10px; border-radius: 12px; margin: 6px 0; }
+.msg.user{ background: #eef2ff; }
+.msg.bot{ background: #ecfeff; }
+
+/* Modals */
+.modal{
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.55);
+  display:grid;
+  place-items:center;
+  padding: 18px;
+}
+.modal-content{
+  width:min(520px, 92vw);
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.modal-content h2{ margin: 0 0 10px; }
+.modal-content a{ color: var(--wm-blue); }
+
+.footer{
+  text-align:center;
+  padding: 18px;
+  color:#4b5563;
+  font-size: 13px;
+}
+
+/* Corners */
+.corner-btn{
+  position: fixed;
+  bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  text-decoration:none;
+  font: inherit;
+  font-weight:700;
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+.corner-btn.left{ left: 14px; }
+.corner-btn.right{ right: 14px; }
