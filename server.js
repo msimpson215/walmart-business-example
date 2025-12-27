@@ -1,39 +1,60 @@
 import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-
-// Basic hardening & perf
 app.use(helmet());
-app.use(compression());
-app.use(morgan("dev"));
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
 
+// Serve your static site from /public
+app.use(express.static(path.join(__dirname, "public")));
 
-// Health check for Render
-app.get("/api/health", (_req, res) => {
-res.json({ ok: true, service: "VoxTalk demo", ts: Date.now() });
+app.get("/healthz", (req, res) => res.status(200).send("ok"));
+
+// Minimal /session so the frontend can ask for it.
+// NOTE: This requires OPENAI_API_KEY in Render Environment.
+app.post("/session", async (req, res) => {
+  try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "Missing OPENAI_API_KEY" });
+    }
+
+    const model = process.env.REALTIME_MODEL || "gpt-4o-realtime-preview";
+    const voice = process.env.REALTIME_VOICE || "alloy";
+
+    const r = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        expires_after: { seconds: 600 },
+        session: { model, voice }
+      })
+    });
+
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) return res.status(r.status).json(data);
+
+    res.json({ client_secret: data.client_secret, model, voice });
+  } catch (e) {
+    res.status(500).json({ error: e?.message || String(e) });
+  }
 });
 
-
-// Serve static front-end from /public
-app.use(express.static(path.join(__dirname, "public"), {
-extensions: ["html"],
-setHeaders(res, filePath) {
-if (filePath.endsWith(".html")) {
-res.setHeader("Cache-Control", "no-store");
-}
-}
-}));
-
-
-// Catch-all → index.html (so deep links work)
-app.get("*", (_req, res) => {
-res.sendFile(path.join(__dirname, "public", "index.html"));
+// Fallback to the frontend
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-
-app.listen(PORT, () => {
-console.log(`✅ VoxTalk — Walmart AI is running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, "0.0.0.0", () => console.log("Listening on", PORT));
