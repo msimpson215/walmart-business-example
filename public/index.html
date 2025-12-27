@@ -1,176 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Walmart Voice AI Demo</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VoxTalk — Walmart Demo</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="brand-bar">
-            <div class="brand">
-                <span class="brand-main">Walmart</span>
-                <span class="brand-sub">Business</span>
-            </div>
-        </div>
-        <div class="tagline">
-            <button class="tagline-upload">Upload Manifest</button>
-        </div>
-    </nav>
-
-    <main class="container">
-        <div class="portal-row">
-            <button class="portal" id="infoTrigger">Info</button>
-            <button class="portal">Orders</button>
-            <button class="portal">Settings</button>
-        </div>
-
-        <div class="stage">
-            <button class="halo-btn" id="startBtn">
-                <div class="halo r1"></div>
-                <div class="halo r2"></div>
-                <div class="halo r3"></div>
-                <span class="halo-label">TAP TO START</span>
-            </button>
-            <button class="stop-btn hidden" id="stopBtn">STOP SESSION</button>
-        </div>
-
-        <div class="quiet">
-            <div class="thread" id="chatThread">
-                <div class="msg bot">System: Voice session ready.</div>
-            </div>
-            <form class="quiet-form" id="chatForm">
-                <input type="text" class="quiet-input" placeholder="Type a message..." id="chatInput">
-                <button type="submit" class="pill send-btn">Send</button>
-            </form>
-        </div>
-    </main>
-
-    <div class="modal hidden" id="infoModal">
-        <div class="modal-content">
-            <h2>Project Info</h2>
-            <p>This is a Walmart Business Voice AI concept powered by OpenAI Realtime.</p>
-            <p>Current Status: <span style="color:green">Connected to Render</span></p>
-            <button class="pill ghost" id="closeModal">Close</button>
-        </div>
+  <header class="navbar">
+    <div class="brand-bar">
+      <h1 class="brand" aria-label="VoxTalk Walmart Demo">
+        <svg class="spark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2l1.2 6.2L19 6l-4.1 4.7L21 12l-6.1 1.3L19 18l-5.8-2.2L12 22l-1.2-6.2L5 18l4.1-4.7L3 12l6.1-1.3L5 6l5.8 2.2L12 2z" fill="rgba(253,185,19,.95)"/>
+        </svg>
+        <span class="brand-main">VoxTalk</span>
+      </h1>
     </div>
 
-    <footer class="footer">
-        &copy; 2024 Walmart Voice AI Demo
-    </footer>
+    <div class="tagline">
+      <button class="tagline-upload" id="btnInfo" type="button">Info</button>
+    </div>
+  </header>
 
-    <script>
-        const infoTrigger = document.getElementById('infoTrigger');
-        const infoModal = document.getElementById('infoModal');
-        const closeModal = document.getElementById('closeModal');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const chatThread = document.getElementById('chatThread');
+  <main class="container">
+    <div class="portal-row">
+      <button class="portal" id="portalWalmart" type="button">Walmart (Demo)</button>
+      <button class="portal" id="portalBusiness" type="button">Business (Demo)</button>
+      <button class="portal" id="portalSupport" type="button">Support</button>
+    </div>
 
-        // --- UI TOGGLES ---
-        infoTrigger.onclick = () => infoModal.classList.remove('hidden');
-        closeModal.onclick = () => infoModal.classList.add('hidden');
-        window.onclick = (e) => { if(e.target === infoModal) infoModal.classList.add('hidden'); };
+    <section class="stage">
+      <button class="halo-btn" id="haloBtn" type="button" aria-label="Start VoxTalk">
+        <span class="halo r1"></span>
+        <span class="halo r2"></span>
+        <span class="halo r3"></span>
+        <span class="halo-label" id="haloLabel">Talk</span>
+      </button>
 
-        // --- REALTIME SESSION LOGIC ---
-        let peerConnection = null;
+      <button class="stop-btn hidden" id="stopBtn" type="button">Stop</button>
+    </section>
 
-        async function startSession() {
-            try {
-                startBtn.disabled = true;
-                startBtn.querySelector('.halo-label').innerText = "CONNECTING...";
+    <section class="quiet" aria-label="Quiet chat">
+      <form class="quiet-form" id="quietForm">
+        <input class="quiet-input" id="quietInput" type="text" placeholder="Type a quick message…" autocomplete="off" />
+        <button class="pill send-btn" type="submit">Send</button>
+        <button class="pill mic-btn" id="quietMic" type="button" title="(Demo) Mic">🎙️</button>
+      </form>
 
-                const resp = await fetch("/session", { method: "POST" });
-                const data = await resp.json();
-                
-                if (!data.client_secret) throw new Error("No secret returned");
+      <div class="thread" id="thread" aria-live="polite"></div>
+    </section>
+  </main>
 
-                const EPHEMERAL_KEY = data.client_secret;
-                peerConnection = new RTCPeerConnection();
+  <a class="corner-btn left" href="/healthz" target="_blank" rel="noreferrer">Health</a>
+  <button class="corner-btn right" id="cornerInfo" type="button">Info</button>
 
-                // Handle Audio
-                const audioEl = document.createElement("audio");
-                audioEl.autoplay = true;
-                peerConnection.ontrack = e => audioEl.srcObject = e.streams[0];
+  <!-- INFO MODAL (FIXED) -->
+  <div class="modal" id="infoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="modal-content" role="document">
+      <div class="modal-head">
+        <h2 id="infoTitle">About VoxTalk</h2>
+        <button class="modal-close" id="closeInfo" type="button" aria-label="Close">✕</button>
+      </div>
 
-                const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
-                peerConnection.addTrack(ms.getTracks()[0]);
+      <p>
+        VoxTalk is a voice-first overlay that can live on top of any site experience.
+        This demo shows the “halo button” + quick chat lane + modal UI behavior.
+      </p>
+      <p>
+        <strong>Next step:</strong> connect the Talk button to the Realtime session from <code>/session</code>.
+      </p>
+      <p>
+        Tip: click outside this card, press <kbd>Esc</kbd>, or hit the ✕ to close.
+      </p>
+    </div>
+  </div>
 
-                // Create Data Channel
-                const dc = peerConnection.createDataChannel("oai-events");
-                dc.onmessage = (e) => {
-                    const event = JSON.parse(e.data);
-                    if (event.type === "response.audio_transcript.done") {
-                        appendMsg("bot", event.transcript);
-                    }
-                };
+  <footer class="footer">
+    © VoxTalk — Demo UI
+  </footer>
 
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-
-                const baseUrl = "https://api.openai.com/v1/realtime";
-                const model = data.model || "gpt-4o-realtime-preview";
-                const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
-                    method: "POST",
-                    body: offer.sdp,
-                    headers: {
-                        Authorization: `Bearer ${EPHEMERAL_KEY}`,
-                        "Content-Type": "application/sdp"
-                    }
-                });
-
-                const answer = { type: "answer", sdp: await sdpResponse.text() };
-                await peerConnection.setRemoteDescription(answer);
-
-                startBtn.classList.add('hidden');
-                stopBtn.classList.remove('hidden');
-
-            } catch (err) {
-                console.error(err);
-                alert("Could not start session.");
-                startBtn.disabled = false;
-                startBtn.querySelector('.halo-label').innerText = "TAP TO START";
-            }
-        }
-
-        function stopSession() {
-            if (peerConnection) peerConnection.close();
-            startBtn.classList.remove('hidden');
-            stopBtn.classList.add('hidden');
-            startBtn.disabled = false;
-            startBtn.querySelector('.halo-label').innerText = "TAP TO START";
-        }
-
-        function appendMsg(role, text) {
-            const div = document.createElement('div');
-            div.className = `msg ${role}`;
-            div.innerText = text;
-            chatThread.appendChild(div);
-            chatThread.scrollTop = chatThread.scrollHeight;
-        }
-
-        startBtn.onclick = startSession;
-        stopBtn.onclick = stopSession;
-
-        chatForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const val = chatInput.value.trim();
-            if(!val) return;
-            appendMsg("user", val);
-            chatInput.value = "";
-            
-            const r = await fetch("/chat", {
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({ prompt: val })
-            });
-            const d = await r.json();
-            appendMsg("bot", d.reply);
-        };
-    </script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>
