@@ -1,4 +1,4 @@
-// server.js  (Node/Render-safe, ESM)
+// server.js (Node/Render-safe, ESM)
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -11,7 +11,11 @@ const PORT = process.env.PORT || 3000;
 
 // Health
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "Walmart AI Grocery Assistant (VoxTalk demo)", ts: Date.now() });
+  res.json({
+    ok: true,
+    service: "Walmart AI Grocery Assistant (VoxTalk demo)",
+    ts: Date.now(),
+  });
 });
 
 // Static
