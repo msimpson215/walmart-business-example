@@ -3,625 +3,294 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VoxTalk — Walmart Demo</title>
+  <title>Walmart • AI Grocery Assistant Demo</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <!-- Top Nav -->
-  <header class="topbar">
-    <div class="topbar__inner">
-      <div class="brand">
-        <div class="spark" aria-hidden="true">✦</div>
-        <div class="brand__text">
-          <div class="brand__name">VoxTalk</div>
-          <div class="brand__sub">Walmart-style demo UI</div>
-        </div>
+  <div class="site">
+    <!-- Background "Walmart" header -->
+    <div class="topbar">
+      <div class="left" aria-label="Walmart header">
+        <!-- Simple inline SVG logo (no external images needed) -->
+        <svg width="118" height="28" viewBox="0 0 260 62" fill="none" aria-hidden="true">
+          <text x="0" y="46" font-size="44" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-weight="800" fill="white">Walmart</text>
+          <!-- spark -->
+          <g transform="translate(205,9)" fill="#fdb913">
+            <rect x="18" y="0" width="10" height="20" rx="5"/>
+            <rect x="18" y="34" width="10" height="20" rx="5"/>
+            <rect x="0" y="18" width="20" height="10" rx="5"/>
+            <rect x="34" y="18" width="20" height="10" rx="5"/>
+            <rect x="6" y="6" width="10" height="20" rx="5" transform="rotate(-45 6 6)"/>
+            <rect x="44" y="6" width="10" height="20" rx="5" transform="rotate(45 44 6)"/>
+          </g>
+        </svg>
       </div>
+      <div style="opacity:.9;font-weight:700;font-size:13px;">Grocery</div>
+    </div>
 
-      <div class="search">
-        <button class="pill pill--ghost" id="btnInfo" title="About this demo">Info</button>
+    <!-- Fake site tabs -->
+    <div class="fake-tabs" aria-label="Walmart grocery tabs">
+      <div class="pill">Pickup &amp; delivery</div>
+      <div class="pill">Departments</div>
+      <div class="pill">Deals</div>
+      <div class="pill">Reorder</div>
+      <div class="pill">Account</div>
+    </div>
 
-        <div class="search__box">
-          <span class="search__icon" aria-hidden="true">⌕</span>
-          <input id="searchInput" type="search" placeholder="Search groceries, household, pharmacy…" autocomplete="off" />
-          <button class="search__clear" id="clearSearch" title="Clear">×</button>
-        </div>
+    <!-- The “Try our new AI Grocery Assistant” button (NOT a popup until clicked) -->
+    <div class="cta-row">
+      <button class="cta" id="openAssistant">Try Our New AI Grocery Assistant</button>
+    </div>
 
-        <label class="pill pill--ghost file">
-          Upload list
-          <input id="fileInput" type="file" accept=".txt,.csv" />
-        </label>
-
-        <button class="pill" id="btnCart">
-          Cart
-          <span class="badge" id="cartCount">0</span>
-        </button>
+    <!-- Background mock page area (keep Walmart visible behind assistant) -->
+    <div class="mock-page">
+      <div class="mock-image">
+        <!-- Optional: drop your walmart screenshot into public/assets/walmart_mock.png -->
+        <img src="./assets/walmart_mock.png" alt="Walmart grocery page background mock"
+             onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(180deg, rgba(0,113,220,.18), rgba(255,255,255,1))';" />
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Sub Nav -->
-  <nav class="subnav">
-    <div class="subnav__inner">
-      <button class="chip chip--active" data-cat="all">All</button>
-      <button class="chip" data-cat="produce">Produce</button>
-      <button class="chip" data-cat="meat">Meat</button>
-      <button class="chip" data-cat="dairy">Dairy</button>
-      <button class="chip" data-cat="frozen">Frozen</button>
-      <button class="chip" data-cat="pantry">Pantry</button>
-      <button class="chip" data-cat="household">Household</button>
-      <div class="subnav__right">
-        <a class="mini" href="/api/health" target="_blank" rel="noopener">API health</a>
+  <!-- Assistant overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="AI Grocery Assistant">
+    <div class="panel" role="document">
+      <div class="panel-header">
+        <div class="brand">
+          <span aria-hidden="true">🟦</span>
+          <span>AI Grocery Assistant</span>
+        </div>
+        <button class="close" id="closeAssistant" aria-label="Close assistant">✕</button>
       </div>
-    </div>
-  </nav>
 
-  <!-- Main -->
-  <main class="main">
-    <section class="hero">
-      <div class="hero__copy">
-        <h1>“Talk to the cart.”</h1>
-        <p>
-          This is a rebuildable VoxTalk demo with a clean Walmart-style shopping UI:
-          search, upload a grocery list, add to cart, and checkout — plus a halo push-to-talk button.
-        </p>
-
-        <div class="hero__actions">
-          <button class="pill" id="btnQuickAdd">Quick add: “milk, eggs, bread”</button>
-          <button class="pill pill--ghost" id="btnOpenCart">Open cart</button>
+      <div class="panel-body">
+        <div class="upload-row">
+          <div class="hint"><strong>Upload your grocery list</strong> (optional)</div>
+          <label class="upload-btn">
+            ⬆ Upload
+            <input id="fileInput" type="file" accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none" />
+          </label>
         </div>
 
-        <div class="callouts">
-          <div class="callout">
-            <div class="callout__title">Upload list</div>
-            <div class="callout__body">Text file with one item per line. We’ll auto-match and add to cart.</div>
+        <div class="nav-row" aria-label="Assistant shortcuts">
+          <!-- These should open the REAL Walmart pages in a new tab -->
+          <a class="nav-link" href="https://www.walmart.com/cart" target="_blank" rel="noopener">Cart</a>
+          <a class="nav-link" href="https://www.walmart.com/help" target="_blank" rel="noopener">Info</a>
+          <a class="nav-link" href="https://www.walmart.com/checkout" target="_blank" rel="noopener">Checkout</a>
+        </div>
+
+        <div class="center">
+          <!-- Left: Press-to-talk “brain” circle -->
+          <div class="voice-card">
+            <button class="ptt" id="ptt">
+              <span id="pttLabel">Press here<br/>to talk</span>
+            </button>
+            <div class="privacy">For privacy, you can also type below.</div>
           </div>
-          <div class="callout">
-            <div class="callout__title">Cart + checkout</div>
-            <div class="callout__body">Drawer cart + checkout modal, taxes + totals.</div>
-          </div>
-          <div class="callout">
-            <div class="callout__title">Halo button</div>
-            <div class="callout__body">Mic permission + listening UI state (ready for realtime wiring).</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="hero__mock">
-        <div class="mockcard">
-          <div class="mockcard__top">
-            <div class="mockcard__dots"><span></span><span></span><span></span></div>
-            <div class="mockcard__label">Demo preview</div>
-          </div>
-          <div class="mockcard__img">
-            <img src="./assets/walmart_mock_.png" alt="Mock screenshot" onerror="this.style.display='none'; document.getElementById('mockFallback').style.display='block';">
-            <div id="mockFallback" class="mockFallback" style="display:none;">
-              Add your screenshot images in <code>public/assets/</code><br/>
-              (<code>walmart_mock_.png</code>, <code>walmart_mock_mobile.png</code>)
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+          <!-- Right: Text + transcript -->
+          <div class="text-card">
+            <div class="transcript" id="transcript" aria-label="Conversation transcript"></div>
 
-    <section class="panel">
-      <div class="panel__head">
-        <h2 id="panelTitle">Top picks</h2>
-        <div class="panel__meta" id="panelMeta">A clean rebuild you can deploy without chasing ghosts.</div>
-      </div>
-
-      <div class="grid" id="productGrid"></div>
-    </section>
-  </main>
-
-  <!-- Halo (Push-to-talk) -->
-  <button class="halo" id="haloBtn" aria-label="Push to talk">
-    <span class="halo__ring" aria-hidden="true"></span>
-    <span class="halo__icon" id="haloIcon" aria-hidden="true">🎙️</span>
-  </button>
-
-  <!-- Toast -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <!-- Info Modal -->
-  <dialog class="modal" id="infoModal">
-    <form method="dialog" class="modal__card">
-      <div class="modal__head">
-        <div>
-          <div class="modal__title">About this VoxTalk demo</div>
-          <div class="modal__sub">Clean rebuild: UI flows are real; voice wiring is stub-ready.</div>
-        </div>
-        <button class="iconbtn" value="cancel" aria-label="Close">×</button>
-      </div>
-
-      <div class="modal__body">
-        <ul class="bullets">
-          <li><b>Upload grocery list:</b> .txt or .csv (one item per line) → auto-adds matches.</li>
-          <li><b>Cart drawer:</b> quantity, remove, totals.</li>
-          <li><b>Checkout:</b> modal with summary + success screen.</li>
-          <li><b>Halo button:</b> mic permission + listening state (hook Realtime later).</li>
-        </ul>
-
-        <div class="small">
-          Tip: If you want a “full Walmart overlay” screenshot-perfect match, drop your exact reference screenshot and
-          I’ll align spacing, fonts, and component order to it.
-        </div>
-      </div>
-
-      <div class="modal__foot">
-        <button class="pill pill--ghost" value="cancel">Close</button>
-        <button class="pill" id="btnInfoOpenCart" value="cancel" type="button">Open cart</button>
-      </div>
-    </form>
-  </dialog>
-
-  <!-- Cart Drawer -->
-  <aside class="drawer" id="cartDrawer" aria-hidden="true">
-    <div class="drawer__overlay" id="drawerOverlay"></div>
-    <div class="drawer__panel" role="dialog" aria-label="Cart">
-      <div class="drawer__head">
-        <div>
-          <div class="drawer__title">Your cart</div>
-          <div class="drawer__sub" id="cartSub">0 items</div>
-        </div>
-        <button class="iconbtn" id="closeCart" aria-label="Close">×</button>
-      </div>
-
-      <div class="drawer__body">
-        <div class="cartEmpty" id="cartEmpty">
-          Your cart is empty. Upload a grocery list or add items from the grid.
-        </div>
-        <div class="cartList" id="cartList"></div>
-      </div>
-
-      <div class="drawer__foot">
-        <div class="totals">
-          <div class="totals__row"><span>Subtotal</span><span id="subTotal">$0.00</span></div>
-          <div class="totals__row"><span>Est. tax</span><span id="taxTotal">$0.00</span></div>
-          <div class="totals__row totals__row--big"><span>Total</span><span id="grandTotal">$0.00</span></div>
-        </div>
-        <button class="pill pill--wide" id="btnCheckout">Checkout</button>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Checkout Modal -->
-  <dialog class="modal" id="checkoutModal">
-    <form method="dialog" class="modal__card">
-      <div class="modal__head">
-        <div>
-          <div class="modal__title">Checkout</div>
-          <div class="modal__sub" id="checkoutSub">Review your order</div>
-        </div>
-        <button class="iconbtn" value="cancel" aria-label="Close">×</button>
-      </div>
-
-      <div class="modal__body">
-        <div id="checkoutBody">
-          <div class="checkoutGrid">
-            <div class="checkoutBox">
-              <div class="checkoutTitle">Delivery details</div>
-              <div class="field">
-                <label>Name</label>
-                <input id="nameField" placeholder="Marty Simpson" />
-              </div>
-              <div class="field">
-                <label>Address</label>
-                <input id="addrField" placeholder="123 Main St, St. Louis, MO" />
-              </div>
-              <div class="field">
-                <label>Notes</label>
-                <input id="noteField" placeholder="Leave at door (demo)" />
-              </div>
-            </div>
-
-            <div class="checkoutBox">
-              <div class="checkoutTitle">Order summary</div>
-              <div class="miniSummary" id="miniSummary"></div>
-              <div class="totals miniTotals">
-                <div class="totals__row"><span>Subtotal</span><span id="subTotal2">$0.00</span></div>
-                <div class="totals__row"><span>Est. tax</span><span id="taxTotal2">$0.00</span></div>
-                <div class="totals__row totals__row--big"><span>Total</span><span id="grandTotal2">$0.00</span></div>
-              </div>
+            <div class="entry" aria-label="Message entry">
+              <button class="iconbtn" id="micBtn" title="Dictate (browser speech recognition)">🎤</button>
+              <input id="textInput" type="text" placeholder="Type your grocery request…" />
+              <button class="iconbtn send" id="sendBtn">Send</button>
             </div>
           </div>
         </div>
 
-        <div id="checkoutSuccess" class="success" style="display:none;">
-          <div class="success__icon">✅</div>
-          <div class="success__title">Order placed (demo)</div>
-          <div class="success__sub">This is where we’d trigger a real backend order + voice confirmation.</div>
+        <div class="actions">
+          <button class="printbtn" id="printBtn">Print text</button>
+          <button class="printbtn" id="clearBtn">Clear</button>
+        </div>
+
+        <div class="footer">
+          <div>If needed, contact one of our human team members.</div>
+          <div><a href="#" id="humanLink">Contact support</a></div>
         </div>
       </div>
-
-      <div class="modal__foot">
-        <button class="pill pill--ghost" value="cancel">Close</button>
-        <button class="pill" id="btnPlaceOrder" type="button">Place order</button>
-      </div>
-    </form>
-  </dialog>
+    </div>
+  </div>
 
   <script>
-    // --- Demo Data ---
-    const TAX_RATE = 0.0825;
+    // ====== Minimal, clean demo behavior (no backend needed) ======
+    const overlay = document.getElementById("overlay");
+    const openAssistant = document.getElementById("openAssistant");
+    const closeAssistant = document.getElementById("closeAssistant");
 
-    const PRODUCTS = [
-      { id:"bananas", name:"Bananas (1 lb)", price:0.59, cat:"produce", emoji:"🍌" },
-      { id:"apples", name:"Gala Apples (3 lb bag)", price:4.48, cat:"produce", emoji:"🍎" },
-      { id:"lettuce", name:"Romaine Hearts", price:3.28, cat:"produce", emoji:"🥬" },
-      { id:"chicken", name:"Chicken Breast (2.5 lb)", price:9.97, cat:"meat", emoji:"🍗" },
-      { id:"groundbeef", name:"Ground Beef (80/20)", price:6.94, cat:"meat", emoji:"🥩" },
-      { id:"milk", name:"2% Milk (1 gal)", price:3.48, cat:"dairy", emoji:"🥛" },
-      { id:"eggs", name:"Large Eggs (12 ct)", price:2.62, cat:"dairy", emoji:"🥚" },
-      { id:"yogurt", name:"Greek Yogurt (4-pack)", price:3.98, cat:"dairy", emoji:"🍶" },
-      { id:"pizza", name:"Frozen Pepperoni Pizza", price:5.44, cat:"frozen", emoji:"🍕" },
-      { id:"icecream", name:"Vanilla Ice Cream", price:4.24, cat:"frozen", emoji:"🍦" },
-      { id:"rice", name:"Long Grain Rice (5 lb)", price:4.98, cat:"pantry", emoji:"🍚" },
-      { id:"pasta", name:"Pasta (16 oz)", price:1.28, cat:"pantry", emoji:"🍝" },
-      { id:"coffee", name:"Ground Coffee", price:7.98, cat:"pantry", emoji:"☕" },
-      { id:"detergent", name:"Laundry Detergent", price:12.97, cat:"household", emoji:"🧺" },
-      { id:"papertowels", name:"Paper Towels (6 rolls)", price:9.98, cat:"household", emoji:"🧻" },
-      { id:"dishsoap", name:"Dish Soap", price:2.88, cat:"household", emoji:"🫧" }
-    ];
+    const transcript = document.getElementById("transcript");
+    const textInput = document.getElementById("textInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const printBtn = document.getElementById("printBtn");
+    const clearBtn = document.getElementById("clearBtn");
 
-    // --- State ---
-    let activeCat = "all";
-    let query = "";
-    const cart = new Map(); // id -> qty
+    const ptt = document.getElementById("ptt");
+    const pttLabel = document.getElementById("pttLabel");
+    const micBtn = document.getElementById("micBtn");
+    const fileInput = document.getElementById("fileInput");
+    const humanLink = document.getElementById("humanLink");
 
-    // --- Helpers ---
-    const $ = (s) => document.querySelector(s);
-    const fmt = (n) => n.toLocaleString(undefined, { style:"currency", currency:"USD" });
+    function open() {
+      overlay.classList.add("open");
+      // greet once, gently
+      if (!transcript.dataset.greeted) {
+        addMsg("ai", "Hi — tell me what groceries you need, and I’ll help you get everything ready for your Walmart cart.");
+        transcript.dataset.greeted = "1";
+      }
+      setTimeout(() => textInput.focus(), 50);
+    }
+    function close() { overlay.classList.remove("open"); }
 
-    function toast(msg) {
-      const el = $("#toast");
-      el.textContent = msg;
-      el.classList.add("toast--show");
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => el.classList.remove("toast--show"), 2300);
+    openAssistant.addEventListener("click", open);
+    closeAssistant.addEventListener("click", close);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape" && overlay.classList.contains("open")) close(); });
+
+    function addMsg(kind, text) {
+      const div = document.createElement("div");
+      div.className = "msg " + kind;
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = kind === "user" ? "You" : "Assistant";
+      const body = document.createElement("div");
+      body.textContent = text;
+      div.appendChild(meta);
+      div.appendChild(body);
+      transcript.appendChild(div);
+      transcript.scrollTop = transcript.scrollHeight;
     }
 
-    function normalize(s) {
-      return (s || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+    function simpleAssistantReply(userText) {
+      // Keep it human + helpful, not busy.
+      const t = userText.toLowerCase();
+      if (t.includes("milk") || t.includes("eggs") || t.includes("bread")) {
+        return "Got it. If you want, tell me brand preferences and sizes (example: 2% milk, dozen large eggs, whole wheat bread).";
+      }
+      if (t.includes("allerg") || t.includes("gluten") || t.includes("diabet")) {
+        return "Thanks for telling me. I can suggest safer substitutions. What foods do you need to avoid, and for who?";
+      }
+      return "Okay. Anything else? If you tell me your budget and whether you want pickup or delivery, I’ll keep it simple.";
     }
 
-    function bestMatch(itemText) {
-      const t = normalize(itemText);
-      if (!t) return null;
-
-      // direct keyword heuristics first
-      const rules = [
-        { k:["banana","bananas"], id:"bananas" },
-        { k:["apple","apples","gala"], id:"apples" },
-        { k:["lettuce","romaine"], id:"lettuce" },
-        { k:["chicken"], id:"chicken" },
-        { k:["beef","ground beef","hamburger"], id:"groundbeef" },
-        { k:["milk"], id:"milk" },
-        { k:["egg","eggs"], id:"eggs" },
-        { k:["yogurt","greek"], id:"yogurt" },
-        { k:["pizza"], id:"pizza" },
-        { k:["ice cream","icecream"], id:"icecream" },
-        { k:["rice"], id:"rice" },
-        { k:["pasta","spaghetti","macaroni"], id:"pasta" },
-        { k:["coffee"], id:"coffee" },
-        { k:["detergent","laundry"], id:"detergent" },
-        { k:["paper towel","paper towels","towels"], id:"papertowels" },
-        { k:["dish","soap","dish soap"], id:"dishsoap" }
-      ];
-      for (const r of rules) {
-        if (r.k.some(k => t.includes(k))) return PRODUCTS.find(p => p.id === r.id) || null;
-      }
-
-      // fallback: crude scoring against product names
-      let best = null, bestScore = 0;
-      for (const p of PRODUCTS) {
-        const pn = normalize(p.name);
-        let score = 0;
-        for (const word of t.split(" ")) {
-          if (!word) continue;
-          if (pn.includes(word)) score += 1;
-        }
-        if (score > bestScore) { bestScore = score; best = p; }
-      }
-      return bestScore ? best : null;
+    function sendText() {
+      const val = textInput.value.trim();
+      if (!val) return;
+      addMsg("user", val);
+      textInput.value = "";
+      // demo reply
+      setTimeout(() => addMsg("ai", simpleAssistantReply(val)), 250);
     }
 
-    function cartCount() {
-      let n = 0;
-      for (const qty of cart.values()) n += qty;
-      return n;
-    }
+    sendBtn.addEventListener("click", sendText);
+    textInput.addEventListener("keydown", (e) => { if (e.key === "Enter") sendText(); });
 
-    function totals() {
-      let sub = 0;
-      for (const [id, qty] of cart.entries()) {
-        const p = PRODUCTS.find(x => x.id === id);
-        if (p) sub += p.price * qty;
-      }
-      const tax = sub * TAX_RATE;
-      const total = sub + tax;
-      return { sub, tax, total };
-    }
+    printBtn.addEventListener("click", () => {
+      const lines = Array.from(transcript.querySelectorAll(".msg"))
+        .map(m => {
+          const who = m.classList.contains("user") ? "You" : "Assistant";
+          const text = m.querySelector("div:last-child").textContent;
+          return `${who}: ${text}`;
+        }).join("\n\n");
 
-    // --- Rendering ---
-    function renderGrid() {
-      const grid = $("#productGrid");
-      grid.innerHTML = "";
-
-      const filtered = PRODUCTS.filter(p => {
-        const catOk = (activeCat === "all") || (p.cat === activeCat);
-        const qOk = !query || normalize(p.name).includes(normalize(query));
-        return catOk && qOk;
-      });
-
-      $("#panelTitle").textContent = query ? `Results for “${query}”` : (activeCat === "all" ? "Top picks" : activeCat[0].toUpperCase() + activeCat.slice(1));
-      $("#panelMeta").textContent = `${filtered.length} item${filtered.length===1?"":"s"} showing`;
-
-      for (const p of filtered) {
-        const qty = cart.get(p.id) || 0;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="card__emoji" aria-hidden="true">${p.emoji}</div>
-          <div class="card__name">${p.name}</div>
-          <div class="card__row">
-            <div class="card__price">${fmt(p.price)}</div>
-            <div class="stepper" aria-label="Quantity controls">
-              <button class="stepper__btn" data-act="dec" data-id="${p.id}" ${qty<=0?"disabled":""}>−</button>
-              <div class="stepper__qty" aria-label="Quantity">${qty}</div>
-              <button class="stepper__btn" data-act="inc" data-id="${p.id}">+</button>
-            </div>
-          </div>
-          <button class="addbtn" data-id="${p.id}">
-            ${qty ? "Add another" : "Add to cart"}
-          </button>
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    function renderCart() {
-      const list = $("#cartList");
-      list.innerHTML = "";
-
-      const empty = cartCount() === 0;
-      $("#cartEmpty").style.display = empty ? "block" : "none";
-
-      if (!empty) {
-        for (const [id, qty] of cart.entries()) {
-          const p = PRODUCTS.find(x => x.id === id);
-          if (!p) continue;
-
-          const row = document.createElement("div");
-          row.className = "cartRow";
-          row.innerHTML = `
-            <div class="cartRow__left">
-              <div class="cartRow__emoji" aria-hidden="true">${p.emoji}</div>
-              <div>
-                <div class="cartRow__name">${p.name}</div>
-                <div class="cartRow__meta">${fmt(p.price)} each</div>
-              </div>
-            </div>
-            <div class="cartRow__right">
-              <div class="stepper stepper--mini">
-                <button class="stepper__btn" data-act="dec" data-id="${p.id}">−</button>
-                <div class="stepper__qty">${qty}</div>
-                <button class="stepper__btn" data-act="inc" data-id="${p.id}">+</button>
-              </div>
-              <button class="link" data-act="rm" data-id="${p.id}">Remove</button>
-            </div>
-          `;
-          list.appendChild(row);
-        }
-      }
-
-      const { sub, tax, total } = totals();
-      $("#subTotal").textContent = fmt(sub);
-      $("#taxTotal").textContent = fmt(tax);
-      $("#grandTotal").textContent = fmt(total);
-
-      $("#subTotal2").textContent = fmt(sub);
-      $("#taxTotal2").textContent = fmt(tax);
-      $("#grandTotal2").textContent = fmt(total);
-
-      $("#cartCount").textContent = cartCount();
-      $("#cartSub").textContent = `${cartCount()} item${cartCount()===1?"":"s"}`;
-      $("#btnCheckout").disabled = empty;
-
-      // Checkout mini summary
-      const ms = $("#miniSummary");
-      ms.innerHTML = "";
-      if (empty) {
-        ms.innerHTML = `<div class="small">Cart is empty.</div>`;
-      } else {
-        for (const [id, qty] of cart.entries()) {
-          const p = PRODUCTS.find(x => x.id === id);
-          if (!p) continue;
-          const line = document.createElement("div");
-          line.className = "miniLine";
-          line.innerHTML = `<span>${p.emoji} ${p.name} × ${qty}</span><span>${fmt(p.price * qty)}</span>`;
-          ms.appendChild(line);
-        }
-      }
-    }
-
-    function openCart() {
-      $("#cartDrawer").classList.add("drawer--open");
-      $("#cartDrawer").setAttribute("aria-hidden", "false");
-      renderCart();
-    }
-
-    function closeCart() {
-      $("#cartDrawer").classList.remove("drawer--open");
-      $("#cartDrawer").setAttribute("aria-hidden", "true");
-    }
-
-    // --- Events ---
-    document.addEventListener("click", (e) => {
-      const t = e.target;
-
-      // chips
-      if (t.classList.contains("chip")) {
-        document.querySelectorAll(".chip").forEach(c => c.classList.remove("chip--active"));
-        t.classList.add("chip--active");
-        activeCat = t.dataset.cat;
-        renderGrid();
-        return;
-      }
-
-      // card add button
-      if (t.classList.contains("addbtn")) {
-        const id = t.dataset.id;
-        cart.set(id, (cart.get(id) || 0) + 1);
-        toast("Added to cart");
-        renderGrid();
-        renderCart();
-        return;
-      }
-
-      // steppers (grid + cart)
-      if (t.dataset && (t.dataset.act === "inc" || t.dataset.act === "dec")) {
-        const id = t.dataset.id;
-        const cur = cart.get(id) || 0;
-        if (t.dataset.act === "inc") cart.set(id, cur + 1);
-        if (t.dataset.act === "dec") {
-          const next = cur - 1;
-          if (next <= 0) cart.delete(id);
-          else cart.set(id, next);
-        }
-        renderGrid();
-        renderCart();
-        return;
-      }
-
-      // remove
-      if (t.dataset && t.dataset.act === "rm") {
-        cart.delete(t.dataset.id);
-        renderGrid();
-        renderCart();
-        return;
-      }
+      const w = window.open("", "_blank");
+      w.document.write("<pre style='font: 16px/1.4 system-ui; white-space: pre-wrap; padding: 18px;'>" +
+        escapeHtml(lines) + "</pre>");
+      w.document.close();
+      w.focus();
+      w.print();
     });
 
-    // Search
-    $("#searchInput").addEventListener("input", (e) => {
-      query = e.target.value;
-      $("#clearSearch").style.opacity = query ? "1" : ".25";
-      renderGrid();
-    });
-    $("#clearSearch").addEventListener("click", () => {
-      $("#searchInput").value = "";
-      query = "";
-      $("#clearSearch").style.opacity = ".25";
-      renderGrid();
-      $("#searchInput").focus();
+    clearBtn.addEventListener("click", () => { transcript.innerHTML = ""; delete transcript.dataset.greeted; });
+
+    // “Contact support” — replace later with your real human workflow
+    humanLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      addMsg("ai", "No problem. A human helper can step in. (Demo: wire this to your support chat, phone, or email.)");
     });
 
-    // Info modal
-    $("#btnInfo").addEventListener("click", () => $("#infoModal").showModal());
-    $("#btnInfoOpenCart").addEventListener("click", () => { $("#infoModal").close(); openCart(); });
-
-    // Cart drawer
-    $("#btnCart").addEventListener("click", openCart);
-    $("#btnOpenCart").addEventListener("click", openCart);
-    $("#closeCart").addEventListener("click", closeCart);
-    $("#drawerOverlay").addEventListener("click", closeCart);
-
-    // Checkout
-    $("#btnCheckout").addEventListener("click", () => {
-      if (cartCount() === 0) return;
-      $("#checkoutSuccess").style.display = "none";
-      $("#checkoutBody").style.display = "block";
-      $("#checkoutSub").textContent = "Review your order";
-      $("#checkoutModal").showModal();
-      renderCart();
-    });
-
-    $("#btnPlaceOrder").addEventListener("click", () => {
-      if (cartCount() === 0) return;
-      $("#checkoutBody").style.display = "none";
-      $("#checkoutSuccess").style.display = "block";
-      $("#checkoutSub").textContent = "Success";
-      toast("Order placed (demo)");
-      cart.clear();
-      renderGrid();
-      renderCart();
-    });
-
-    // Quick add
-    $("#btnQuickAdd").addEventListener("click", () => {
-      ["milk", "eggs", "bread"].forEach(it => {
-        const p = bestMatch(it) || PRODUCTS.find(x => x.id === "pasta");
-        if (p) cart.set(p.id, (cart.get(p.id) || 0) + 1);
-      });
-      toast("Quick list added");
-      renderGrid();
-      renderCart();
-      openCart();
-    });
-
-    // Upload grocery list
-    $("#fileInput").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
+    // File upload demo (reads text files; others just acknowledge)
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
       if (!file) return;
-
-      const text = await file.text();
-      const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-
-      let added = 0, missed = 0;
-      for (const line of lines) {
-        const p = bestMatch(line);
-        if (p) {
-          cart.set(p.id, (cart.get(p.id) || 0) + 1);
-          added++;
-        } else {
-          missed++;
-        }
+      addMsg("user", `Uploaded: ${file.name}`);
+      if (file.type === "text/plain") {
+        const txt = await file.text();
+        addMsg("ai", "Thanks. I can use that list. Tell me if you prefer pickup or delivery.");
+        // Optionally show a snippet:
+        addMsg("ai", "List preview: " + txt.slice(0, 180).replace(/\s+/g," ").trim() + (txt.length > 180 ? "…" : ""));
+      } else {
+        addMsg("ai", "Thanks. For now this demo only reads .txt lists, but we can add PDF/Doc parsing later.");
       }
-
-      renderGrid();
-      renderCart();
-      openCart();
-
-      toast(`List processed: ${added} added${missed ? `, ${missed} unmatched` : ""}`);
-      e.target.value = "";
+      fileInput.value = "";
     });
 
-    // Halo push-to-talk (UI + mic permission)
+    // ====== Voice (browser-only) ======
+    // Press-to-talk + mic button uses Web Speech API if available.
+    let rec = null;
     let listening = false;
-    $("#haloBtn").addEventListener("click", async () => {
-      try {
-        if (!listening) {
-          // Request mic permission
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          // Immediately stop (demo UI only)
-          stream.getTracks().forEach(t => t.stop());
 
-          listening = true;
-          document.body.classList.add("listening");
-          $("#haloIcon").textContent = "🟡";
-          toast("Listening (demo) — wire Realtime here");
-          // Auto-stop after a moment (keeps it feeling “alive”)
-          setTimeout(() => {
-            listening = false;
-            document.body.classList.remove("listening");
-            $("#haloIcon").textContent = "🎙️";
-          }, 2200);
-        }
-      } catch (err) {
-        toast("Mic permission blocked");
+    function startListening() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        addMsg("ai", "Voice input isn’t available in this browser. You can type instead.");
+        return;
       }
+      rec = new SR();
+      rec.lang = "en-US";
+      rec.interimResults = true;
+      rec.continuous = false;
+
+      let finalText = "";
+
+      rec.onresult = (evt) => {
+        let interim = "";
+        for (let i = evt.resultIndex; i < evt.results.length; i++) {
+          const chunk = evt.results[i][0].transcript;
+          if (evt.results[i].isFinal) finalText += chunk;
+          else interim += chunk;
+        }
+        pttLabel.textContent = interim ? interim : "Listening…";
+      };
+
+      rec.onend = () => {
+        setListening(false);
+        pttLabel.textContent = "Press here\nto talk";
+        if (finalText.trim()) {
+          textInput.value = finalText.trim();
+          sendText();
+        }
+      };
+
+      setListening(true);
+      pttLabel.textContent = "Listening…";
+      rec.start();
+    }
+
+    function stopListening() {
+      try { rec && rec.stop(); } catch {}
+      setListening(false);
+      pttLabel.textContent = "Press here\nto talk";
+    }
+
+    function setListening(v) {
+      listening = v;
+      ptt.classList.toggle("listening", v);
+    }
+
+    ptt.addEventListener("click", () => {
+      if (!listening) startListening();
+      else stopListening();
     });
 
-    // Init
-    $("#clearSearch").style.opacity = ".25";
-    renderGrid();
-    renderCart();
+    micBtn.addEventListener("click", () => {
+      if (!listening) startListening();
+      else stopListening();
+    });
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
   </script>
 </body>
 </html>
