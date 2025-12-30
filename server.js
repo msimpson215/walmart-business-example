@@ -1,31 +1,23 @@
-// server.js (Node/Render-safe, ESM)
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
+const app = express();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Health
-app.get("/api/health", (_req, res) => {
-  res.json({
-    ok: true,
-    service: "Walmart AI Grocery Assistant (VoxTalk demo)",
-    ts: Date.now(),
-  });
-});
-
-// Static
+app.use(express.json({ limit: "2mb" }));
 app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 
-// SPA fallback
-app.get("*", (_req, res) => {
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, service: "voxtalk-walmart-demo", ts: new Date().toISOString() });
+});
+
+// SPA-style fallback (optional but helpful)
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Running on :${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
