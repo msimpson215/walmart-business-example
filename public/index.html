@@ -1,150 +1,627 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Walmart — AI Grocery Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VoxTalk — Walmart Demo</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
+  <!-- Top Nav -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <div class="spark" aria-hidden="true">✦</div>
+        <div class="brand__text">
+          <div class="brand__name">VoxTalk</div>
+          <div class="brand__sub">Walmart-style demo UI</div>
+        </div>
+      </div>
 
-<header class="navbar">
-  <div class="brand">
-    <span class="spark" aria-hidden="true">✯</span>
-    <span class="brand-main">Walmart</span>
-  </div>
+      <div class="search">
+        <button class="pill pill--ghost" id="btnInfo" title="About this demo">Info</button>
 
-  <div class="nav-right">
-    <button class="nav-btn" id="infoBtn" type="button">Info</button>
-    <button class="nav-btn" type="button">Cart</button>
-    <button class="nav-btn" type="button">Checkout</button>
-  </div>
-</header>
+        <div class="search__box">
+          <span class="search__icon" aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="Search groceries, household, pharmacy…" autocomplete="off" />
+          <button class="search__clear" id="clearSearch" title="Clear">×</button>
+        </div>
 
-<main class="container">
-  <section class="hero">
-    <div class="hero-top">
-      <button class="tagline-upload" id="uploadBtn" type="button">Upload grocery list</button>
-      <input id="fileInput" class="hidden" type="file" accept=".txt,.pdf,.png,.jpg,.jpeg" />
+        <label class="pill pill--ghost file">
+          Upload list
+          <input id="fileInput" type="file" accept=".txt,.csv" />
+        </label>
+
+        <button class="pill" id="btnCart">
+          Cart
+          <span class="badge" id="cartCount">0</span>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <picture class="hero-picture">
-      <source srcset="walmart_mock_mobile.png" media="(max-width: 640px)" />
-      <img src="walmart_mock_.png" alt="Walmart mock" />
-    </picture>
+  <!-- Sub Nav -->
+  <nav class="subnav">
+    <div class="subnav__inner">
+      <button class="chip chip--active" data-cat="all">All</button>
+      <button class="chip" data-cat="produce">Produce</button>
+      <button class="chip" data-cat="meat">Meat</button>
+      <button class="chip" data-cat="dairy">Dairy</button>
+      <button class="chip" data-cat="frozen">Frozen</button>
+      <button class="chip" data-cat="pantry">Pantry</button>
+      <button class="chip" data-cat="household">Household</button>
+      <div class="subnav__right">
+        <a class="mini" href="/api/health" target="_blank" rel="noopener">API health</a>
+      </div>
+    </div>
+  </nav>
 
-    <div class="upload-note" id="uploadNote" aria-live="polite"></div>
-  </section>
+  <!-- Main -->
+  <main class="main">
+    <section class="hero">
+      <div class="hero__copy">
+        <h1>“Talk to the cart.”</h1>
+        <p>
+          This is a rebuildable VoxTalk demo with a clean Walmart-style shopping UI:
+          search, upload a grocery list, add to cart, and checkout — plus a halo push-to-talk button.
+        </p>
 
-  <section class="stage">
-    <button class="halo-btn" id="startBtn" type="button" aria-label="Tap to Talk">
-      <span class="halo r1" aria-hidden="true"></span>
-      <span class="halo r2" aria-hidden="true"></span>
-      <span class="halo r3" aria-hidden="true"></span>
-      <span class="halo-label">Tap to Talk</span>
-    </button>
+        <div class="hero__actions">
+          <button class="pill" id="btnQuickAdd">Quick add: “milk, eggs, bread”</button>
+          <button class="pill pill--ghost" id="btnOpenCart">Open cart</button>
+        </div>
 
-    <button class="stop-btn hidden" id="stopBtn" type="button">Pause</button>
-  </section>
+        <div class="callouts">
+          <div class="callout">
+            <div class="callout__title">Upload list</div>
+            <div class="callout__body">Text file with one item per line. We’ll auto-match and add to cart.</div>
+          </div>
+          <div class="callout">
+            <div class="callout__title">Cart + checkout</div>
+            <div class="callout__body">Drawer cart + checkout modal, taxes + totals.</div>
+          </div>
+          <div class="callout">
+            <div class="callout__title">Halo button</div>
+            <div class="callout__body">Mic permission + listening UI state (ready for realtime wiring).</div>
+          </div>
+        </div>
+      </div>
 
-  <section class="quiet">
-    <form class="quiet-form" id="quietForm">
-      <input class="quiet-input" id="quietInput" placeholder="Type here for privacy…" autocomplete="off" />
-      <button class="pill send-btn" type="submit">Send</button>
-      <button class="pill mic-btn" type="button" id="micBtn" title="Mic (demo)">🎙️</button>
-      <button class="pill ghost" type="button" id="humanBtn">Contact human</button>
+      <div class="hero__mock">
+        <div class="mockcard">
+          <div class="mockcard__top">
+            <div class="mockcard__dots"><span></span><span></span><span></span></div>
+            <div class="mockcard__label">Demo preview</div>
+          </div>
+          <div class="mockcard__img">
+            <img src="./assets/walmart_mock_.png" alt="Mock screenshot" onerror="this.style.display='none'; document.getElementById('mockFallback').style.display='block';">
+            <div id="mockFallback" class="mockFallback" style="display:none;">
+              Add your screenshot images in <code>public/assets/</code><br/>
+              (<code>walmart_mock_.png</code>, <code>walmart_mock_mobile.png</code>)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <h2 id="panelTitle">Top picks</h2>
+        <div class="panel__meta" id="panelMeta">A clean rebuild you can deploy without chasing ghosts.</div>
+      </div>
+
+      <div class="grid" id="productGrid"></div>
+    </section>
+  </main>
+
+  <!-- Halo (Push-to-talk) -->
+  <button class="halo" id="haloBtn" aria-label="Push to talk">
+    <span class="halo__ring" aria-hidden="true"></span>
+    <span class="halo__icon" id="haloIcon" aria-hidden="true">🎙️</span>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Info Modal -->
+  <dialog class="modal" id="infoModal">
+    <form method="dialog" class="modal__card">
+      <div class="modal__head">
+        <div>
+          <div class="modal__title">About this VoxTalk demo</div>
+          <div class="modal__sub">Clean rebuild: UI flows are real; voice wiring is stub-ready.</div>
+        </div>
+        <button class="iconbtn" value="cancel" aria-label="Close">×</button>
+      </div>
+
+      <div class="modal__body">
+        <ul class="bullets">
+          <li><b>Upload grocery list:</b> .txt or .csv (one item per line) → auto-adds matches.</li>
+          <li><b>Cart drawer:</b> quantity, remove, totals.</li>
+          <li><b>Checkout:</b> modal with summary + success screen.</li>
+          <li><b>Halo button:</b> mic permission + listening state (hook Realtime later).</li>
+        </ul>
+
+        <div class="small">
+          Tip: If you want a “full Walmart overlay” screenshot-perfect match, drop your exact reference screenshot and
+          I’ll align spacing, fonts, and component order to it.
+        </div>
+      </div>
+
+      <div class="modal__foot">
+        <button class="pill pill--ghost" value="cancel">Close</button>
+        <button class="pill" id="btnInfoOpenCart" value="cancel" type="button">Open cart</button>
+      </div>
     </form>
+  </dialog>
 
-    <div class="thread" id="thread"></div>
-  </section>
-</main>
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer__overlay" id="drawerOverlay"></div>
+    <div class="drawer__panel" role="dialog" aria-label="Cart">
+      <div class="drawer__head">
+        <div>
+          <div class="drawer__title">Your cart</div>
+          <div class="drawer__sub" id="cartSub">0 items</div>
+        </div>
+        <button class="iconbtn" id="closeCart" aria-label="Close">×</button>
+      </div>
 
-<!-- Info modal -->
-<div class="modal hidden" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
-  <div class="modal-content">
-    <h2 id="infoTitle">About VoxTalk</h2>
-    <p>This is the Walmart-style voice + quiet text assistant demo. (UI-only stub.)</p>
-    <button class="pill send-btn" id="closeInfo" type="button">Close</button>
-  </div>
-</div>
+      <div class="drawer__body">
+        <div class="cartEmpty" id="cartEmpty">
+          Your cart is empty. Upload a grocery list or add items from the grid.
+        </div>
+        <div class="cartList" id="cartList"></div>
+      </div>
 
-<a class="corner-btn left" href="/api/health" target="_blank" rel="noreferrer">Health</a>
-<a class="corner-btn right" href="#" id="helpBtn">Help</a>
+      <div class="drawer__foot">
+        <div class="totals">
+          <div class="totals__row"><span>Subtotal</span><span id="subTotal">$0.00</span></div>
+          <div class="totals__row"><span>Est. tax</span><span id="taxTotal">$0.00</span></div>
+          <div class="totals__row totals__row--big"><span>Total</span><span id="grandTotal">$0.00</span></div>
+        </div>
+        <button class="pill pill--wide" id="btnCheckout">Checkout</button>
+      </div>
+    </div>
+  </aside>
 
-<script>
-  const startBtn = document.getElementById("startBtn");
-  const stopBtn  = document.getElementById("stopBtn");
-  const thread   = document.getElementById("thread");
+  <!-- Checkout Modal -->
+  <dialog class="modal" id="checkoutModal">
+    <form method="dialog" class="modal__card">
+      <div class="modal__head">
+        <div>
+          <div class="modal__title">Checkout</div>
+          <div class="modal__sub" id="checkoutSub">Review your order</div>
+        </div>
+        <button class="iconbtn" value="cancel" aria-label="Close">×</button>
+      </div>
 
-  const infoBtn   = document.getElementById("infoBtn");
-  const infoModal = document.getElementById("infoModal");
-  const closeInfo = document.getElementById("closeInfo");
+      <div class="modal__body">
+        <div id="checkoutBody">
+          <div class="checkoutGrid">
+            <div class="checkoutBox">
+              <div class="checkoutTitle">Delivery details</div>
+              <div class="field">
+                <label>Name</label>
+                <input id="nameField" placeholder="Marty Simpson" />
+              </div>
+              <div class="field">
+                <label>Address</label>
+                <input id="addrField" placeholder="123 Main St, St. Louis, MO" />
+              </div>
+              <div class="field">
+                <label>Notes</label>
+                <input id="noteField" placeholder="Leave at door (demo)" />
+              </div>
+            </div>
 
-  const uploadBtn  = document.getElementById("uploadBtn");
-  const fileInput  = document.getElementById("fileInput");
-  const uploadNote = document.getElementById("uploadNote");
+            <div class="checkoutBox">
+              <div class="checkoutTitle">Order summary</div>
+              <div class="miniSummary" id="miniSummary"></div>
+              <div class="totals miniTotals">
+                <div class="totals__row"><span>Subtotal</span><span id="subTotal2">$0.00</span></div>
+                <div class="totals__row"><span>Est. tax</span><span id="taxTotal2">$0.00</span></div>
+                <div class="totals__row totals__row--big"><span>Total</span><span id="grandTotal2">$0.00</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  function add(who, text){
-    const d = document.createElement("div");
-    d.className = "msg " + who;
-    d.textContent = text;
-    thread.appendChild(d);
-    thread.scrollTop = thread.scrollHeight;
-  }
+        <div id="checkoutSuccess" class="success" style="display:none;">
+          <div class="success__icon">✅</div>
+          <div class="success__title">Order placed (demo)</div>
+          <div class="success__sub">This is where we’d trigger a real backend order + voice confirmation.</div>
+        </div>
+      </div>
 
-  // Voice button (UI stub)
-  startBtn.onclick = () => {
-    startBtn.disabled = true;
-    stopBtn.classList.remove("hidden");
-    add("bot","🎙️ Voice started (demo)");
-  };
+      <div class="modal__foot">
+        <button class="pill pill--ghost" value="cancel">Close</button>
+        <button class="pill" id="btnPlaceOrder" type="button">Place order</button>
+      </div>
+    </form>
+  </dialog>
 
-  stopBtn.onclick = () => {
-    startBtn.disabled = false;
-    stopBtn.classList.add("hidden");
-    add("bot","⏸️ Paused");
-  };
+  <script>
+    // --- Demo Data ---
+    const TAX_RATE = 0.0825;
 
-  // Info modal
-  function closeModal(){
-    infoModal.classList.add("hidden");
-    document.body.style.overflow = "";
-  }
-  infoBtn.onclick = () => {
-    infoModal.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-  };
-  closeInfo.onclick = closeModal;
-  infoModal.onclick = (e) => { if (e.target === infoModal) closeModal(); };
+    const PRODUCTS = [
+      { id:"bananas", name:"Bananas (1 lb)", price:0.59, cat:"produce", emoji:"🍌" },
+      { id:"apples", name:"Gala Apples (3 lb bag)", price:4.48, cat:"produce", emoji:"🍎" },
+      { id:"lettuce", name:"Romaine Hearts", price:3.28, cat:"produce", emoji:"🥬" },
+      { id:"chicken", name:"Chicken Breast (2.5 lb)", price:9.97, cat:"meat", emoji:"🍗" },
+      { id:"groundbeef", name:"Ground Beef (80/20)", price:6.94, cat:"meat", emoji:"🥩" },
+      { id:"milk", name:"2% Milk (1 gal)", price:3.48, cat:"dairy", emoji:"🥛" },
+      { id:"eggs", name:"Large Eggs (12 ct)", price:2.62, cat:"dairy", emoji:"🥚" },
+      { id:"yogurt", name:"Greek Yogurt (4-pack)", price:3.98, cat:"dairy", emoji:"🍶" },
+      { id:"pizza", name:"Frozen Pepperoni Pizza", price:5.44, cat:"frozen", emoji:"🍕" },
+      { id:"icecream", name:"Vanilla Ice Cream", price:4.24, cat:"frozen", emoji:"🍦" },
+      { id:"rice", name:"Long Grain Rice (5 lb)", price:4.98, cat:"pantry", emoji:"🍚" },
+      { id:"pasta", name:"Pasta (16 oz)", price:1.28, cat:"pantry", emoji:"🍝" },
+      { id:"coffee", name:"Ground Coffee", price:7.98, cat:"pantry", emoji:"☕" },
+      { id:"detergent", name:"Laundry Detergent", price:12.97, cat:"household", emoji:"🧺" },
+      { id:"papertowels", name:"Paper Towels (6 rolls)", price:9.98, cat:"household", emoji:"🧻" },
+      { id:"dishsoap", name:"Dish Soap", price:2.88, cat:"household", emoji:"🫧" }
+    ];
 
-  // Quiet chat (UI stub)
-  document.getElementById("quietForm").onsubmit = (e) => {
-    e.preventDefault();
-    const v = document.getElementById("quietInput").value.trim();
-    if(!v) return;
-    add("user", v);
-    document.getElementById("quietInput").value = "";
-    add("bot", "Got it (demo)");
-  };
+    // --- State ---
+    let activeCat = "all";
+    let query = "";
+    const cart = new Map(); // id -> qty
 
-  document.getElementById("humanBtn").onclick = () => add("bot","Connecting to a human (demo) …");
-  document.getElementById("micBtn").onclick   = () => add("bot","Mic pressed (demo) …");
+    // --- Helpers ---
+    const $ = (s) => document.querySelector(s);
+    const fmt = (n) => n.toLocaleString(undefined, { style:"currency", currency:"USD" });
 
-  // Upload (UI stub)
-  uploadBtn.onclick = () => fileInput.click();
-  fileInput.onchange = () => {
-    const f = fileInput.files && fileInput.files[0];
-    if (!f) return;
-    uploadNote.textContent = `Loaded: ${f.name} (demo — not processed yet)`;
-    add("bot", `📎 Grocery list uploaded: ${f.name} (demo)`);
-  };
+    function toast(msg) {
+      const el = $("#toast");
+      el.textContent = msg;
+      el.classList.add("toast--show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove("toast--show"), 2300);
+    }
 
-  // Help
-  document.getElementById("helpBtn").onclick = (e) => {
-    e.preventDefault();
-    add("bot","Try: “Build a $50 grocery list” (demo)");
-  };
-</script>
+    function normalize(s) {
+      return (s || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
+    function bestMatch(itemText) {
+      const t = normalize(itemText);
+      if (!t) return null;
+
+      // direct keyword heuristics first
+      const rules = [
+        { k:["banana","bananas"], id:"bananas" },
+        { k:["apple","apples","gala"], id:"apples" },
+        { k:["lettuce","romaine"], id:"lettuce" },
+        { k:["chicken"], id:"chicken" },
+        { k:["beef","ground beef","hamburger"], id:"groundbeef" },
+        { k:["milk"], id:"milk" },
+        { k:["egg","eggs"], id:"eggs" },
+        { k:["yogurt","greek"], id:"yogurt" },
+        { k:["pizza"], id:"pizza" },
+        { k:["ice cream","icecream"], id:"icecream" },
+        { k:["rice"], id:"rice" },
+        { k:["pasta","spaghetti","macaroni"], id:"pasta" },
+        { k:["coffee"], id:"coffee" },
+        { k:["detergent","laundry"], id:"detergent" },
+        { k:["paper towel","paper towels","towels"], id:"papertowels" },
+        { k:["dish","soap","dish soap"], id:"dishsoap" }
+      ];
+      for (const r of rules) {
+        if (r.k.some(k => t.includes(k))) return PRODUCTS.find(p => p.id === r.id) || null;
+      }
+
+      // fallback: crude scoring against product names
+      let best = null, bestScore = 0;
+      for (const p of PRODUCTS) {
+        const pn = normalize(p.name);
+        let score = 0;
+        for (const word of t.split(" ")) {
+          if (!word) continue;
+          if (pn.includes(word)) score += 1;
+        }
+        if (score > bestScore) { bestScore = score; best = p; }
+      }
+      return bestScore ? best : null;
+    }
+
+    function cartCount() {
+      let n = 0;
+      for (const qty of cart.values()) n += qty;
+      return n;
+    }
+
+    function totals() {
+      let sub = 0;
+      for (const [id, qty] of cart.entries()) {
+        const p = PRODUCTS.find(x => x.id === id);
+        if (p) sub += p.price * qty;
+      }
+      const tax = sub * TAX_RATE;
+      const total = sub + tax;
+      return { sub, tax, total };
+    }
+
+    // --- Rendering ---
+    function renderGrid() {
+      const grid = $("#productGrid");
+      grid.innerHTML = "";
+
+      const filtered = PRODUCTS.filter(p => {
+        const catOk = (activeCat === "all") || (p.cat === activeCat);
+        const qOk = !query || normalize(p.name).includes(normalize(query));
+        return catOk && qOk;
+      });
+
+      $("#panelTitle").textContent = query ? `Results for “${query}”` : (activeCat === "all" ? "Top picks" : activeCat[0].toUpperCase() + activeCat.slice(1));
+      $("#panelMeta").textContent = `${filtered.length} item${filtered.length===1?"":"s"} showing`;
+
+      for (const p of filtered) {
+        const qty = cart.get(p.id) || 0;
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card__emoji" aria-hidden="true">${p.emoji}</div>
+          <div class="card__name">${p.name}</div>
+          <div class="card__row">
+            <div class="card__price">${fmt(p.price)}</div>
+            <div class="stepper" aria-label="Quantity controls">
+              <button class="stepper__btn" data-act="dec" data-id="${p.id}" ${qty<=0?"disabled":""}>−</button>
+              <div class="stepper__qty" aria-label="Quantity">${qty}</div>
+              <button class="stepper__btn" data-act="inc" data-id="${p.id}">+</button>
+            </div>
+          </div>
+          <button class="addbtn" data-id="${p.id}">
+            ${qty ? "Add another" : "Add to cart"}
+          </button>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    function renderCart() {
+      const list = $("#cartList");
+      list.innerHTML = "";
+
+      const empty = cartCount() === 0;
+      $("#cartEmpty").style.display = empty ? "block" : "none";
+
+      if (!empty) {
+        for (const [id, qty] of cart.entries()) {
+          const p = PRODUCTS.find(x => x.id === id);
+          if (!p) continue;
+
+          const row = document.createElement("div");
+          row.className = "cartRow";
+          row.innerHTML = `
+            <div class="cartRow__left">
+              <div class="cartRow__emoji" aria-hidden="true">${p.emoji}</div>
+              <div>
+                <div class="cartRow__name">${p.name}</div>
+                <div class="cartRow__meta">${fmt(p.price)} each</div>
+              </div>
+            </div>
+            <div class="cartRow__right">
+              <div class="stepper stepper--mini">
+                <button class="stepper__btn" data-act="dec" data-id="${p.id}">−</button>
+                <div class="stepper__qty">${qty}</div>
+                <button class="stepper__btn" data-act="inc" data-id="${p.id}">+</button>
+              </div>
+              <button class="link" data-act="rm" data-id="${p.id}">Remove</button>
+            </div>
+          `;
+          list.appendChild(row);
+        }
+      }
+
+      const { sub, tax, total } = totals();
+      $("#subTotal").textContent = fmt(sub);
+      $("#taxTotal").textContent = fmt(tax);
+      $("#grandTotal").textContent = fmt(total);
+
+      $("#subTotal2").textContent = fmt(sub);
+      $("#taxTotal2").textContent = fmt(tax);
+      $("#grandTotal2").textContent = fmt(total);
+
+      $("#cartCount").textContent = cartCount();
+      $("#cartSub").textContent = `${cartCount()} item${cartCount()===1?"":"s"}`;
+      $("#btnCheckout").disabled = empty;
+
+      // Checkout mini summary
+      const ms = $("#miniSummary");
+      ms.innerHTML = "";
+      if (empty) {
+        ms.innerHTML = `<div class="small">Cart is empty.</div>`;
+      } else {
+        for (const [id, qty] of cart.entries()) {
+          const p = PRODUCTS.find(x => x.id === id);
+          if (!p) continue;
+          const line = document.createElement("div");
+          line.className = "miniLine";
+          line.innerHTML = `<span>${p.emoji} ${p.name} × ${qty}</span><span>${fmt(p.price * qty)}</span>`;
+          ms.appendChild(line);
+        }
+      }
+    }
+
+    function openCart() {
+      $("#cartDrawer").classList.add("drawer--open");
+      $("#cartDrawer").setAttribute("aria-hidden", "false");
+      renderCart();
+    }
+
+    function closeCart() {
+      $("#cartDrawer").classList.remove("drawer--open");
+      $("#cartDrawer").setAttribute("aria-hidden", "true");
+    }
+
+    // --- Events ---
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+
+      // chips
+      if (t.classList.contains("chip")) {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("chip--active"));
+        t.classList.add("chip--active");
+        activeCat = t.dataset.cat;
+        renderGrid();
+        return;
+      }
+
+      // card add button
+      if (t.classList.contains("addbtn")) {
+        const id = t.dataset.id;
+        cart.set(id, (cart.get(id) || 0) + 1);
+        toast("Added to cart");
+        renderGrid();
+        renderCart();
+        return;
+      }
+
+      // steppers (grid + cart)
+      if (t.dataset && (t.dataset.act === "inc" || t.dataset.act === "dec")) {
+        const id = t.dataset.id;
+        const cur = cart.get(id) || 0;
+        if (t.dataset.act === "inc") cart.set(id, cur + 1);
+        if (t.dataset.act === "dec") {
+          const next = cur - 1;
+          if (next <= 0) cart.delete(id);
+          else cart.set(id, next);
+        }
+        renderGrid();
+        renderCart();
+        return;
+      }
+
+      // remove
+      if (t.dataset && t.dataset.act === "rm") {
+        cart.delete(t.dataset.id);
+        renderGrid();
+        renderCart();
+        return;
+      }
+    });
+
+    // Search
+    $("#searchInput").addEventListener("input", (e) => {
+      query = e.target.value;
+      $("#clearSearch").style.opacity = query ? "1" : ".25";
+      renderGrid();
+    });
+    $("#clearSearch").addEventListener("click", () => {
+      $("#searchInput").value = "";
+      query = "";
+      $("#clearSearch").style.opacity = ".25";
+      renderGrid();
+      $("#searchInput").focus();
+    });
+
+    // Info modal
+    $("#btnInfo").addEventListener("click", () => $("#infoModal").showModal());
+    $("#btnInfoOpenCart").addEventListener("click", () => { $("#infoModal").close(); openCart(); });
+
+    // Cart drawer
+    $("#btnCart").addEventListener("click", openCart);
+    $("#btnOpenCart").addEventListener("click", openCart);
+    $("#closeCart").addEventListener("click", closeCart);
+    $("#drawerOverlay").addEventListener("click", closeCart);
+
+    // Checkout
+    $("#btnCheckout").addEventListener("click", () => {
+      if (cartCount() === 0) return;
+      $("#checkoutSuccess").style.display = "none";
+      $("#checkoutBody").style.display = "block";
+      $("#checkoutSub").textContent = "Review your order";
+      $("#checkoutModal").showModal();
+      renderCart();
+    });
+
+    $("#btnPlaceOrder").addEventListener("click", () => {
+      if (cartCount() === 0) return;
+      $("#checkoutBody").style.display = "none";
+      $("#checkoutSuccess").style.display = "block";
+      $("#checkoutSub").textContent = "Success";
+      toast("Order placed (demo)");
+      cart.clear();
+      renderGrid();
+      renderCart();
+    });
+
+    // Quick add
+    $("#btnQuickAdd").addEventListener("click", () => {
+      ["milk", "eggs", "bread"].forEach(it => {
+        const p = bestMatch(it) || PRODUCTS.find(x => x.id === "pasta");
+        if (p) cart.set(p.id, (cart.get(p.id) || 0) + 1);
+      });
+      toast("Quick list added");
+      renderGrid();
+      renderCart();
+      openCart();
+    });
+
+    // Upload grocery list
+    $("#fileInput").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+
+      let added = 0, missed = 0;
+      for (const line of lines) {
+        const p = bestMatch(line);
+        if (p) {
+          cart.set(p.id, (cart.get(p.id) || 0) + 1);
+          added++;
+        } else {
+          missed++;
+        }
+      }
+
+      renderGrid();
+      renderCart();
+      openCart();
+
+      toast(`List processed: ${added} added${missed ? `, ${missed} unmatched` : ""}`);
+      e.target.value = "";
+    });
+
+    // Halo push-to-talk (UI + mic permission)
+    let listening = false;
+    $("#haloBtn").addEventListener("click", async () => {
+      try {
+        if (!listening) {
+          // Request mic permission
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          // Immediately stop (demo UI only)
+          stream.getTracks().forEach(t => t.stop());
+
+          listening = true;
+          document.body.classList.add("listening");
+          $("#haloIcon").textContent = "🟡";
+          toast("Listening (demo) — wire Realtime here");
+          // Auto-stop after a moment (keeps it feeling “alive”)
+          setTimeout(() => {
+            listening = false;
+            document.body.classList.remove("listening");
+            $("#haloIcon").textContent = "🎙️";
+          }, 2200);
+        }
+      } catch (err) {
+        toast("Mic permission blocked");
+      }
+    });
+
+    // Init
+    $("#clearSearch").style.opacity = ".25";
+    renderGrid();
+    renderCart();
+  </script>
 </body>
 </html>
