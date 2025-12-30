@@ -2,295 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Walmart • AI Grocery Assistant Demo</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Walmart Grocery</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div class="site">
-    <!-- Background "Walmart" header -->
-    <div class="topbar">
-      <div class="left" aria-label="Walmart header">
-        <!-- Simple inline SVG logo (no external images needed) -->
-        <svg width="118" height="28" viewBox="0 0 260 62" fill="none" aria-hidden="true">
-          <text x="0" y="46" font-size="44" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-weight="800" fill="white">Walmart</text>
-          <!-- spark -->
-          <g transform="translate(205,9)" fill="#fdb913">
-            <rect x="18" y="0" width="10" height="20" rx="5"/>
-            <rect x="18" y="34" width="10" height="20" rx="5"/>
-            <rect x="0" y="18" width="20" height="10" rx="5"/>
-            <rect x="34" y="18" width="20" height="10" rx="5"/>
-            <rect x="6" y="6" width="10" height="20" rx="5" transform="rotate(-45 6 6)"/>
-            <rect x="44" y="6" width="10" height="20" rx="5" transform="rotate(45 44 6)"/>
-          </g>
-        </svg>
-      </div>
-      <div style="opacity:.9;font-weight:700;font-size:13px;">Grocery</div>
-    </div>
 
-    <!-- Fake site tabs -->
-    <div class="fake-tabs" aria-label="Walmart grocery tabs">
-      <div class="pill">Pickup &amp; delivery</div>
-      <div class="pill">Departments</div>
-      <div class="pill">Deals</div>
-      <div class="pill">Reorder</div>
-      <div class="pill">Account</div>
+  <!-- Walmart header -->
+  <header class="wm-header">
+    <div class="wm-logo">
+      Walmart <span class="spark">✺</span>
     </div>
+    <nav class="wm-nav">
+      <span>Grocery</span>
+      <span>Pickup &amp; delivery</span>
+      <span>Departments</span>
+      <span>Deals</span>
+      <span>Reorder</span>
+      <span>Account</span>
+    </nav>
+  </header>
 
-    <!-- The “Try our new AI Grocery Assistant” button (NOT a popup until clicked) -->
-    <div class="cta-row">
-      <button class="cta" id="openAssistant">Try Our New AI Grocery Assistant</button>
-    </div>
-
-    <!-- Background mock page area (keep Walmart visible behind assistant) -->
-    <div class="mock-page">
-      <div class="mock-image">
-        <!-- Optional: drop your walmart screenshot into public/assets/walmart_mock.png -->
-        <img src="./assets/walmart_mock.png" alt="Walmart grocery page background mock"
-             onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(180deg, rgba(0,113,220,.18), rgba(255,255,255,1))';" />
-      </div>
-    </div>
+  <!-- AI assistant bar (integrated, not popup) -->
+  <div class="ai-bar">
+    <button id="openAssistant">
+      Try our new AI Grocery Assistant — it’s free
+    </button>
   </div>
+
+  <!-- Background content placeholder -->
+  <main class="page-placeholder">
+    <!-- This stays visible behind the assistant -->
+  </main>
 
   <!-- Assistant overlay -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="AI Grocery Assistant">
-    <div class="panel" role="document">
-      <div class="panel-header">
-        <div class="brand">
-          <span aria-hidden="true">🟦</span>
-          <span>AI Grocery Assistant</span>
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="backdrop" id="closeBackdrop"></div>
+
+    <section class="assistant">
+
+      <!-- Top -->
+      <header class="assistant-header">
+        <div class="wm-logo small">
+          Walmart <span class="spark">✺</span>
         </div>
-        <button class="close" id="closeAssistant" aria-label="Close assistant">✕</button>
+        <nav class="assistant-tabs">
+          <button>Cart</button>
+          <button>Info</button>
+          <button>Checkout</button>
+        </nav>
+      </header>
+
+      <!-- Center -->
+      <div class="assistant-body">
+        <button id="ptt" class="ptt">
+          <span class="ring"></span>
+          <span class="label">Press here to talk</span>
+        </button>
+
+        <div class="privacy">
+          For privacy, you can text instead
+        </div>
+
+        <div class="text-row">
+          <button class="mic">🎤</button>
+          <input id="textInput" placeholder="Example: add six oranges" />
+          <button id="send">Send</button>
+        </div>
+
+        <div id="transcript" class="transcript"></div>
       </div>
 
-      <div class="panel-body">
-        <div class="upload-row">
-          <div class="hint"><strong>Upload your grocery list</strong> (optional)</div>
-          <label class="upload-btn">
-            ⬆ Upload
-            <input id="fileInput" type="file" accept=".txt,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none" />
-          </label>
-        </div>
+      <!-- Bottom -->
+      <footer class="assistant-footer">
+        <button id="print">Print text</button>
+        <a href="#">Contact a human team member</a>
+      </footer>
 
-        <div class="nav-row" aria-label="Assistant shortcuts">
-          <!-- These should open the REAL Walmart pages in a new tab -->
-          <a class="nav-link" href="https://www.walmart.com/cart" target="_blank" rel="noopener">Cart</a>
-          <a class="nav-link" href="https://www.walmart.com/help" target="_blank" rel="noopener">Info</a>
-          <a class="nav-link" href="https://www.walmart.com/checkout" target="_blank" rel="noopener">Checkout</a>
-        </div>
-
-        <div class="center">
-          <!-- Left: Press-to-talk “brain” circle -->
-          <div class="voice-card">
-            <button class="ptt" id="ptt">
-              <span id="pttLabel">Press here<br/>to talk</span>
-            </button>
-            <div class="privacy">For privacy, you can also type below.</div>
-          </div>
-
-          <!-- Right: Text + transcript -->
-          <div class="text-card">
-            <div class="transcript" id="transcript" aria-label="Conversation transcript"></div>
-
-            <div class="entry" aria-label="Message entry">
-              <button class="iconbtn" id="micBtn" title="Dictate (browser speech recognition)">🎤</button>
-              <input id="textInput" type="text" placeholder="Type your grocery request…" />
-              <button class="iconbtn send" id="sendBtn">Send</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="printbtn" id="printBtn">Print text</button>
-          <button class="printbtn" id="clearBtn">Clear</button>
-        </div>
-
-        <div class="footer">
-          <div>If needed, contact one of our human team members.</div>
-          <div><a href="#" id="humanLink">Contact support</a></div>
-        </div>
-      </div>
-    </div>
+    </section>
   </div>
 
-  <script>
-    // ====== Minimal, clean demo behavior (no backend needed) ======
-    const overlay = document.getElementById("overlay");
-    const openAssistant = document.getElementById("openAssistant");
-    const closeAssistant = document.getElementById("closeAssistant");
+<script>
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openAssistant");
+  const closeBackdrop = document.getElementById("closeBackdrop");
 
-    const transcript = document.getElementById("transcript");
-    const textInput = document.getElementById("textInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const printBtn = document.getElementById("printBtn");
-    const clearBtn = document.getElementById("clearBtn");
+  openBtn.onclick = () => {
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden","false");
+  };
 
-    const ptt = document.getElementById("ptt");
-    const pttLabel = document.getElementById("pttLabel");
-    const micBtn = document.getElementById("micBtn");
-    const fileInput = document.getElementById("fileInput");
-    const humanLink = document.getElementById("humanLink");
+  closeBackdrop.onclick = () => {
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden","true");
+  };
 
-    function open() {
-      overlay.classList.add("open");
-      // greet once, gently
-      if (!transcript.dataset.greeted) {
-        addMsg("ai", "Hi — tell me what groceries you need, and I’ll help you get everything ready for your Walmart cart.");
-        transcript.dataset.greeted = "1";
-      }
-      setTimeout(() => textInput.focus(), 50);
-    }
-    function close() { overlay.classList.remove("open"); }
+  const transcript = document.getElementById("transcript");
+  const textInput = document.getElementById("textInput");
 
-    openAssistant.addEventListener("click", open);
-    closeAssistant.addEventListener("click", close);
-    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
-    window.addEventListener("keydown", (e) => { if (e.key === "Escape" && overlay.classList.contains("open")) close(); });
+  document.getElementById("send").onclick = () => {
+    if (!textInput.value) return;
+    const div = document.createElement("div");
+    div.textContent = "You: " + textInput.value;
+    transcript.appendChild(div);
 
-    function addMsg(kind, text) {
-      const div = document.createElement("div");
-      div.className = "msg " + kind;
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = kind === "user" ? "You" : "Assistant";
-      const body = document.createElement("div");
-      body.textContent = text;
-      div.appendChild(meta);
-      div.appendChild(body);
-      transcript.appendChild(div);
-      transcript.scrollTop = transcript.scrollHeight;
-    }
+    const reply = document.createElement("div");
+    reply.textContent = "Assistant: Added item to cart.";
+    transcript.appendChild(reply);
 
-    function simpleAssistantReply(userText) {
-      // Keep it human + helpful, not busy.
-      const t = userText.toLowerCase();
-      if (t.includes("milk") || t.includes("eggs") || t.includes("bread")) {
-        return "Got it. If you want, tell me brand preferences and sizes (example: 2% milk, dozen large eggs, whole wheat bread).";
-      }
-      if (t.includes("allerg") || t.includes("gluten") || t.includes("diabet")) {
-        return "Thanks for telling me. I can suggest safer substitutions. What foods do you need to avoid, and for who?";
-      }
-      return "Okay. Anything else? If you tell me your budget and whether you want pickup or delivery, I’ll keep it simple.";
-    }
+    textInput.value = "";
+  };
 
-    function sendText() {
-      const val = textInput.value.trim();
-      if (!val) return;
-      addMsg("user", val);
-      textInput.value = "";
-      // demo reply
-      setTimeout(() => addMsg("ai", simpleAssistantReply(val)), 250);
-    }
+  document.getElementById("print").onclick = () => window.print();
+</script>
 
-    sendBtn.addEventListener("click", sendText);
-    textInput.addEventListener("keydown", (e) => { if (e.key === "Enter") sendText(); });
-
-    printBtn.addEventListener("click", () => {
-      const lines = Array.from(transcript.querySelectorAll(".msg"))
-        .map(m => {
-          const who = m.classList.contains("user") ? "You" : "Assistant";
-          const text = m.querySelector("div:last-child").textContent;
-          return `${who}: ${text}`;
-        }).join("\n\n");
-
-      const w = window.open("", "_blank");
-      w.document.write("<pre style='font: 16px/1.4 system-ui; white-space: pre-wrap; padding: 18px;'>" +
-        escapeHtml(lines) + "</pre>");
-      w.document.close();
-      w.focus();
-      w.print();
-    });
-
-    clearBtn.addEventListener("click", () => { transcript.innerHTML = ""; delete transcript.dataset.greeted; });
-
-    // “Contact support” — replace later with your real human workflow
-    humanLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      addMsg("ai", "No problem. A human helper can step in. (Demo: wire this to your support chat, phone, or email.)");
-    });
-
-    // File upload demo (reads text files; others just acknowledge)
-    fileInput.addEventListener("change", async () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
-      addMsg("user", `Uploaded: ${file.name}`);
-      if (file.type === "text/plain") {
-        const txt = await file.text();
-        addMsg("ai", "Thanks. I can use that list. Tell me if you prefer pickup or delivery.");
-        // Optionally show a snippet:
-        addMsg("ai", "List preview: " + txt.slice(0, 180).replace(/\s+/g," ").trim() + (txt.length > 180 ? "…" : ""));
-      } else {
-        addMsg("ai", "Thanks. For now this demo only reads .txt lists, but we can add PDF/Doc parsing later.");
-      }
-      fileInput.value = "";
-    });
-
-    // ====== Voice (browser-only) ======
-    // Press-to-talk + mic button uses Web Speech API if available.
-    let rec = null;
-    let listening = false;
-
-    function startListening() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) {
-        addMsg("ai", "Voice input isn’t available in this browser. You can type instead.");
-        return;
-      }
-      rec = new SR();
-      rec.lang = "en-US";
-      rec.interimResults = true;
-      rec.continuous = false;
-
-      let finalText = "";
-
-      rec.onresult = (evt) => {
-        let interim = "";
-        for (let i = evt.resultIndex; i < evt.results.length; i++) {
-          const chunk = evt.results[i][0].transcript;
-          if (evt.results[i].isFinal) finalText += chunk;
-          else interim += chunk;
-        }
-        pttLabel.textContent = interim ? interim : "Listening…";
-      };
-
-      rec.onend = () => {
-        setListening(false);
-        pttLabel.textContent = "Press here\nto talk";
-        if (finalText.trim()) {
-          textInput.value = finalText.trim();
-          sendText();
-        }
-      };
-
-      setListening(true);
-      pttLabel.textContent = "Listening…";
-      rec.start();
-    }
-
-    function stopListening() {
-      try { rec && rec.stop(); } catch {}
-      setListening(false);
-      pttLabel.textContent = "Press here\nto talk";
-    }
-
-    function setListening(v) {
-      listening = v;
-      ptt.classList.toggle("listening", v);
-    }
-
-    ptt.addEventListener("click", () => {
-      if (!listening) startListening();
-      else stopListening();
-    });
-
-    micBtn.addEventListener("click", () => {
-      if (!listening) startListening();
-      else stopListening();
-    });
-
-    function escapeHtml(s){
-      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-  </script>
 </body>
 </html>
