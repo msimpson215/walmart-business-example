@@ -1,31 +1,43 @@
-// server.js (Node/Render-safe, ESM)
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Health
+
+// Basic hardening & perf
+app.use(helmet());
+app.use(compression());
+app.use(morgan("dev"));
+
+
+// Health check for Render
 app.get("/api/health", (_req, res) => {
-  res.json({
-    ok: true,
-    service: "Walmart AI Grocery Assistant (VoxTalk demo)",
-    ts: Date.now(),
-  });
+res.json({ ok: true, service: "VoxTalk demo", ts: Date.now() });
 });
 
-// Static
-app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 
-// SPA fallback
+// Serve static front-end from /public
+app.use(express.static(path.join(__dirname, "public"), {
+extensions: ["html"],
+setHeaders(res, filePath) {
+if (filePath.endsWith(".html")) {
+res.setHeader("Cache-Control", "no-store");
+}
+}
+}));
+
+
+// Catch-all → index.html (so deep links work)
 app.get("*", (_req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Running on :${PORT}`);
+
+app.listen(PORT, () => {
+console.log(`✅ VoxTalk — Walmart AI is running on http://localhost:${PORT}`);
 });
