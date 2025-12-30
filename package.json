@@ -1,18 +1,12 @@
 {
-  "name": "walmart-assistant",
+  "name": "walmart-business-example",
   "version": "1.0.0",
-  "description": "Voice-enabled assistant with socket communication",
-  "main": "server/server.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node server/server.js"
-  },
-  "engines": {
-    "node": ">=22.0.0"
+    "start": "node server.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "express": "^4.19.2"
   }
 }
