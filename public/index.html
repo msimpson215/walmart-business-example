@@ -3,68 +3,316 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Assistant Demo</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Walmart – AI Grocery Assistant (Demo)</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-
-<header class="site-header">
-  <div class="logo">Walmart <span class="spark">✺</span></div>
-  <nav class="nav">
-    <span>Grocery</span>
-    <span>Pickup & delivery</span>
-    <span>Departments</span>
-    <span>Deals</span>
-    <span>Reorder</span>
-    <span>Account</span>
-  </nav>
-</header>
-
-<div class="assistant-bar">
-  <button id="openAssistant">Try our new AI Grocery Assistant</button>
-</div>
-
-<div class="page-content"></div>
-
-<div id="overlay" class="overlay">
-  <div class="backdrop" id="closeOverlay"></div>
-
-  <div class="assistant">
-    <header class="assistant-header">
-      <div class="logo small">Walmart <span class="spark">✺</span></div>
-      <div class="tabs">
-        <button>Cart</button>
-        <button>Info</button>
-        <button>Checkout</button>
+  <!-- Background "Walmart grocery" mock page (kept visible while assistant opens) -->
+  <div class="site">
+    <header class="wm-topbar" aria-label="Walmart header">
+      <div class="wm-brand">
+        <img class="wm-logo" src="/assets/walmart-logo.png" alt="Walmart" />
+      </div>
+      <div class="wm-search" role="search">
+        <input aria-label="Search Walmart" placeholder="Search everything at Walmart" />
+        <button class="wm-searchBtn" aria-label="Search">Search</button>
+      </div>
+      <div class="wm-actions">
+        <button class="wm-pill">Reorder</button>
+        <button class="wm-pill">Account</button>
       </div>
     </header>
 
-    <div class="assistant-body">
-      <div class="mic-circle">Press to Talk</div>
+    <nav class="wm-tabs" aria-label="Departments">
+      <button class="wm-tab is-active">Grocery</button>
+      <button class="wm-tab">Fresh</button>
+      <button class="wm-tab">Household</button>
+      <button class="wm-tab">Health</button>
+      <button class="wm-tab">Deals</button>
+    </nav>
 
-      <div class="privacy">For privacy, you can type instead</div>
-
-      <div class="input-row">
-        <button>🎤</button>
-        <input placeholder="Example: add bananas" />
-        <button>Send</button>
-      </div>
-
-      <div class="transcript"></div>
+    <!-- Bar under tabs -->
+    <div class="ai-launch">
+      <button id="openAssistant" class="ai-launchBtn" type="button">
+        Try our new AI Grocery Assistant
+        <span class="ai-launchSub">Talk or type — stays on this page</span>
+      </button>
     </div>
 
-    <footer class="assistant-footer">
-      <button onclick="window.print()">Print text</button>
-      <a href="#">Contact a human</a>
-    </footer>
+    <main class="wm-grid" aria-label="Product grid">
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Great Value Baby Carrots, 1 lb</div>
+        <div class="wm-price">$1.24</div>
+        <button class="wm-add">Add</button>
+      </div>
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Organic Bananas, 2 lb</div>
+        <div class="wm-price">$1.98</div>
+        <button class="wm-add">Add</button>
+      </div>
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Milk, 1 gal</div>
+        <div class="wm-price">$3.42</div>
+        <button class="wm-add">Add</button>
+      </div>
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Bread, 20 oz</div>
+        <div class="wm-price">$2.18</div>
+        <button class="wm-add">Add</button>
+      </div>
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Eggs, 12 ct</div>
+        <div class="wm-price">$2.79</div>
+        <button class="wm-add">Add</button>
+      </div>
+      <div class="wm-card">
+        <div class="wm-img"></div>
+        <div class="wm-title">Chicken Breast, 2 lb</div>
+        <div class="wm-price">$7.96</div>
+        <button class="wm-add">Add</button>
+      </div>
+    </main>
   </div>
-</div>
 
-<script>
-  const overlay = document.getElementById("overlay");
-  document.getElementById("openAssistant").onclick = () => overlay.classList.add("open");
-  document.getElementById("closeOverlay").onclick = () => overlay.classList.remove("open");
-</script>
+  <!-- Assistant overlay -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="overlay-backdrop" data-close="true"></div>
 
+    <section class="panel" role="dialog" aria-modal="true" aria-label="AI Grocery Assistant">
+      <header class="panel-head">
+        <img class="panel-logo" src="/assets/walmart-logo.png" alt="Walmart" />
+        <button class="iconBtn" id="closeAssistant" aria-label="Close">✕</button>
+      </header>
+
+      <div class="panel-body">
+        <div class="panel-row panel-rowTop">
+          <label class="upload">
+            <input id="fileInput" type="file" accept=".txt,.pdf,.doc,.docx" />
+            <span>Upload your grocery list</span>
+          </label>
+
+          <nav class="tabs" aria-label="Assistant tabs">
+            <button class="tab is-active" data-tab="chat">Chat</button>
+            <button class="tab" data-tab="cart">Cart</button>
+            <button class="tab" data-tab="info">Info</button>
+            <button class="tab" data-tab="checkout">Checkout</button>
+          </nav>
+        </div>
+
+        <!-- CHAT -->
+        <div class="tabPane is-active" data-pane="chat">
+          <button id="ptt" class="ptt" type="button" aria-label="Press to talk">
+            <span class="pttRing"></span>
+            <span class="pttCore">
+              <img src="/assets/spark.png" alt="" />
+            </span>
+            <span class="pttLabel">Press here to talk</span>
+            <span class="pttHint">or type below</span>
+          </button>
+
+          <div class="privacyLine">For privacy, you can text instead of speaking.</div>
+
+          <div class="composer" role="group" aria-label="Text input">
+            <button id="mic" class="iconBtn" type="button" aria-label="Microphone">🎙</button>
+            <input id="textInput" placeholder="Example: add carrots, milk, and eggs" />
+            <button id="send" class="sendBtn" type="button">Send</button>
+          </div>
+
+          <div class="tools">
+            <button id="print" class="ghostBtn" type="button">Print text</button>
+            <span class="tiny">Demo transcript appears below.</span>
+          </div>
+
+          <div id="transcript" class="transcript" aria-live="polite"></div>
+        </div>
+
+        <!-- CART -->
+        <div class="tabPane" data-pane="cart">
+          <h3>Your cart (demo)</h3>
+          <div id="cartList" class="cartList"></div>
+          <div class="cartActions">
+            <a class="primaryLink" href="https://www.walmart.com/cart" target="_blank" rel="noreferrer">Open Walmart cart</a>
+          </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="tabPane" data-pane="info">
+          <h3>How this works</h3>
+          <ul class="bullets">
+            <li>This assistant sits on the page — it doesn’t take you away from your shopping view.</li>
+            <li>You can speak or type a grocery request (example: “carrots”).</li>
+            <li>It suggests an item and you choose “Add to cart.”</li>
+            <li>Checkout opens the normal Walmart flow in a new tab.</li>
+          </ul>
+          <div class="note">
+            Privacy note: this demo stores text only in your browser (local) and clears when you refresh.
+          </div>
+        </div>
+
+        <!-- CHECKOUT -->
+        <div class="tabPane" data-pane="checkout">
+          <h3>Checkout</h3>
+          <p class="muted">
+            When you’re ready, open the normal Walmart checkout. You’ll log in there like usual.
+          </p>
+          <div class="checkoutRow">
+            <a class="primaryLink" href="https://www.walmart.com/checkout" target="_blank" rel="noreferrer">Go to Walmart checkout</a>
+            <a class="ghostBtn asLink" href="https://www.walmart.com" target="_blank" rel="noreferrer">Continue shopping</a>
+          </div>
+        </div>
+      </div>
+
+      <footer class="panel-foot">
+        <div class="human">
+          If needed, contact one of our human team members.
+          <a href="#" onclick="alert('Demo: connect to live help'); return false;">Get help</a>
+        </div>
+        <div class="rightSlot" aria-label="Right footer slot">
+          <span class="tiny">Powered by in-site assistant</span>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    // Overlay open/close
+    const overlay = document.getElementById("overlay");
+    const openBtn = document.getElementById("openAssistant");
+    const closeBtn = document.getElementById("closeAssistant");
+    const backdrop = overlay.querySelector(".overlay-backdrop");
+
+    function openOverlay(){
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("noScroll");
+      setTimeout(() => document.getElementById("textInput").focus(), 50);
+    }
+    function closeOverlay(){
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("noScroll");
+    }
+
+    openBtn.addEventListener("click", openOverlay);
+    closeBtn.addEventListener("click", closeOverlay);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target?.dataset?.close) closeOverlay();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("is-open")) closeOverlay();
+    });
+
+    // Tabs
+    const tabButtons = Array.from(document.querySelectorAll(".tab"));
+    const panes = Array.from(document.querySelectorAll(".tabPane"));
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.toggle("is-active", b === btn));
+        panes.forEach(p => p.classList.toggle("is-active", p.dataset.pane === btn.dataset.tab));
+      });
+    });
+
+    // Transcript + demo item suggestions
+    const transcript = document.getElementById("transcript");
+    const textInput = document.getElementById("textInput");
+    const sendBtn = document.getElementById("send");
+    const micBtn = document.getElementById("mic");
+    const pttBtn = document.getElementById("ptt");
+    const printBtn = document.getElementById("print");
+
+    const cartList = document.getElementById("cartList");
+    const cart = [];
+
+    function addLine(who, text){
+      const row = document.createElement("div");
+      row.className = "line " + who;
+      row.innerHTML = `<div class="who">${who === "you" ? "You" : "Assistant"}</div>
+                       <div class="msg"></div>`;
+      row.querySelector(".msg").textContent = text;
+      transcript.appendChild(row);
+      transcript.scrollTop = transcript.scrollHeight;
+    }
+
+    function suggestItem(query){
+      const q = (query || "").toLowerCase();
+      const item = q.includes("carrot") ? { name:"Great Value Baby Carrots (1 lb)", price:"$1.24" }
+                : q.includes("milk") ? { name:"Milk (1 gal)", price:"$3.42" }
+                : q.includes("egg") ? { name:"Eggs (12 ct)", price:"$2.79" }
+                : q.includes("banana") ? { name:"Organic Bananas (2 lb)", price:"$1.98" }
+                : null;
+
+      if(!item){
+        addLine("bot", "Got it. Say an item like carrots, milk, eggs, or bananas (demo).");
+        return;
+      }
+
+      const card = document.createElement("div");
+      card.className = "suggest";
+      card.innerHTML = `
+        <div class="suggestTitle">${item.name}</div>
+        <div class="suggestMeta">${item.price}</div>
+        <button class="suggestAdd" type="button">Add to cart</button>
+      `;
+      card.querySelector(".suggestAdd").addEventListener("click", () => {
+        cart.push(item);
+        renderCart();
+        addLine("bot", `Added to cart: ${item.name}. Want anything else?`);
+      });
+
+      transcript.appendChild(card);
+      transcript.scrollTop = transcript.scrollHeight;
+    }
+
+    function renderCart(){
+      cartList.innerHTML = "";
+      if(cart.length === 0){
+        cartList.innerHTML = `<div class="muted">Your demo cart is empty.</div>`;
+        return;
+      }
+      cart.forEach((it, idx) => {
+        const row = document.createElement("div");
+        row.className = "cartRow";
+        row.innerHTML = `
+          <div class="cartName">${it.name}</div>
+          <div class="cartPrice">${it.price}</div>
+          <button class="iconBtn" aria-label="Remove">✕</button>
+        `;
+        row.querySelector("button").addEventListener("click", () => {
+          cart.splice(idx, 1);
+          renderCart();
+        });
+        cartList.appendChild(row);
+      });
+    }
+    renderCart();
+
+    function sendText(){
+      const v = textInput.value.trim();
+      if(!v) return;
+      addLine("you", v);
+      textInput.value = "";
+      setTimeout(() => suggestItem(v), 250);
+    }
+
+    sendBtn.addEventListener("click", sendText);
+    textInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") sendText();
+    });
+
+    // Mic/PTT are demo toggles (visual only)
+    function toggleListen(btn){
+      const on = btn.classList.toggle("is-listening");
+      addLine("bot", on ? "Listening… (demo)" : "Stopped listening. (demo)");
+    }
+    micBtn.addEventListener("click", () => toggleListen(micBtn));
+    pttBtn.addEventListener("click", () => toggleListen(pttBtn));
+
+    printBtn.addEventListener("click", () => window.print());
+  </script>
 </body>
 </html>
