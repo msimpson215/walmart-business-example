@@ -8,16 +8,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, service: "voxtalk-walmart-demo", ts: new Date().toISOString() });
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.json({ ok: true });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+  console.log("Server running on port " + PORT);
 });
