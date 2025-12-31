@@ -1,10 +1,11 @@
 {
-  "name": "embedded-ai-assistant-demo",
+  "name": "voxtalk-walmart-demo",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2"
